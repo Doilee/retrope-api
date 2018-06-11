@@ -14,3 +14,22 @@
 $router->get('/', function () use ($router) {
     return $router->app->version();
 });
+
+
+
+$router->post('login', [
+        'uses' => 'AuthController@authenticate'
+    ]
+);
+
+// routes accessible when logged in
+$router->group([
+    'middleware' => 'jwt.auth'
+], function() use ($router) {
+    $router->get('users', function() {
+        $users = \App\User::all();
+        return response()->json($users);
+    });
+
+    //
+});
