@@ -69,7 +69,7 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $this->validate($request, [
-            'name' => 'required|string|min:2',
+            'username' => 'required|string|min:2',
             'email' => 'required|email|unique:users',
             'password' => 'required|string|min:6|confirmed'
         ]);
@@ -85,7 +85,7 @@ class AuthController extends Controller
         ]);
 
         Mail::send('email.verify', [
-            'name' => $user->name,
+            'name' => $user->username,
             'verificationCode' => $verificationCode
         ], function($msg) use ($user) {
             $msg->to($user->email);
@@ -103,15 +103,15 @@ class AuthController extends Controller
      * @param  \App\User   $user
      * @return mixed
      */
-    public function login(User $user)
+    public function login(Request $request, User $user)
     {
-        $this->validate($this->request, [
-            'email'     => 'required|email',
-            'password'  => 'required'
+        $this->validate($request, [
+            'username' => 'required|string',
+            'password' => 'required|string'
         ]);
 
         // Find the user by email
-        $user = User::where('email', $this->request->input('email'))->first();
+        $user = User::where('username', '=', $request->get('username'))->first();
 
         if (!$user) {
             // You wil probably have some sort of helpers or whatever
@@ -124,7 +124,7 @@ class AuthController extends Controller
         }
 
         // Verify the password and generate the token
-        if (Hash::check($this->request->input('password'), $user->password)) {
+        if (Hash::check($request->get('password'), $user->password)) {
             return response()->json([
                 'token' => $this->jwt($user)
             ], 200);
@@ -162,6 +162,6 @@ class AuthController extends Controller
             ]);
         }
 
-        return response()->json(['success'=> false, 'error'=> "Verification code is invalid."]);
+        return response()->json(['success' => false, 'error' => "Verification code is invalid."]);
     }
 }

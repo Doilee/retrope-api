@@ -12,7 +12,7 @@
 */
 
 Route::get('/', function () use ($router) {
-    return $router->app->version();
+    return App::version();
 });
 
 Route::post('register', 'AuthController@register');
