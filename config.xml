@@ -1,0 +1,67 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<hudson>
+  <disabledAdministrativeMonitors/>
+  <version>2.121.2</version>
+  <installStateName>RUNNING</installStateName>
+  <numExecutors>2</numExecutors>
+  <mode>NORMAL</mode>
+  <useSecurity>true</useSecurity>
+  <authorizationStrategy class="org.jenkinsci.plugins.GithubAuthorizationStrategy" plugin="github-oauth@0.29">
+    <rootACL>
+      <organizationNameList class="linked-list">
+        <string></string>
+      </organizationNameList>
+      <adminUserNameList class="linked-list">
+        <string>arbak</string>
+        <string>admin</string>
+        <string>doilee</string>
+      </adminUserNameList>
+      <authenticatedUserReadPermission>true</authenticatedUserReadPermission>
+      <useRepositoryPermissions>true</useRepositoryPermissions>
+      <authenticatedUserCreateJobPermission>true</authenticatedUserCreateJobPermission>
+      <allowGithubWebHookPermission>true</allowGithubWebHookPermission>
+      <allowCcTrayPermission>false</allowCcTrayPermission>
+      <allowAnonymousReadPermission>false</allowAnonymousReadPermission>
+      <allowAnonymousJobStatusPermission>false</allowAnonymousJobStatusPermission>
+    </rootACL>
+  </authorizationStrategy>
+  <securityRealm class="org.jenkinsci.plugins.GithubSecurityRealm">
+    <githubWebUri>https://github.com</githubWebUri>
+    <githubApiUri>https://api.github.com</githubApiUri>
+    <clientID>34bd89dfbff7693a1672</clientID>
+    <clientSecret>{AQAAABAAAAAw2fTOn99sQSOypw5KaUCyAb6Ve6WM13sSllxt3V8uCLacun8RU6QwQHqtkiG4+ndjf/XrnODNdx4qo5+4fTM91A==}</clientSecret>
+    <oauthScopes>read:org,user:email</oauthScopes>
+  </securityRealm>
+  <disableRememberMe>false</disableRememberMe>
+  <projectNamingStrategy class="jenkins.model.ProjectNamingStrategy$DefaultProjectNamingStrategy"/>
+  <workspaceDir>${JENKINS_HOME}/workspace/${ITEM_FULL_NAME}</workspaceDir>
+  <buildsDir>${ITEM_ROOTDIR}/builds</buildsDir>
+  <markupFormatter class="hudson.markup.EscapedMarkupFormatter"/>
+  <jdks/>
+  <viewsTabBar class="hudson.views.DefaultViewsTabBar"/>
+  <myViewsTabBar class="hudson.views.DefaultMyViewsTabBar"/>
+  <clouds/>
+  <quietPeriod>5</quietPeriod>
+  <scmCheckoutRetryCount>0</scmCheckoutRetryCount>
+  <views>
+    <hudson.model.AllView>
+      <owner class="hudson" reference="../../.."/>
+      <name>all</name>
+      <filterExecutors>false</filterExecutors>
+      <filterQueue>false</filterQueue>
+      <properties class="hudson.model.View$PropertyList"/>
+    </hudson.model.AllView>
+  </views>
+  <primaryView>all</primaryView>
+  <slaveAgentPort>-1</slaveAgentPort>
+  <disabledAgentProtocols>
+    <string>JNLP-connect</string>
+    <string>JNLP2-connect</string>
+  </disabledAgentProtocols>
+  <label></label>
+  <crumbIssuer class="hudson.security.csrf.DefaultCrumbIssuer">
+    <excludeClientIPFromCrumb>false</excludeClientIPFromCrumb>
+  </crumbIssuer>
+  <nodeProperties/>
+  <globalNodeProperties/>
+</hudson>
