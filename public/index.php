@@ -1,7 +1,5 @@
 <?php
 
-sf
-
 /**
  * Laravel - A PHP Framework For Web Artisans
  *
