@@ -1,6 +1,6 @@
 <?php
 
-phpinfo();
+1phpinfo();
 
 /**
  * Laravel - A PHP Framework For Web Artisans
