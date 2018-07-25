@@ -35,7 +35,7 @@
       <emailAddress>l.arbaczewski@gmail.com</emailAddress>
     </hudson.tasks.Mailer_-UserProperty>
     <org.jenkinsci.plugins.GithubAccessTokenProperty plugin="github-oauth@0.29">
-      <accessToken>{AQAAABAAAAAwUF+/M3y2vR7XfQkn1xET19JDRfScHsDs0ddEvIoF2v6kBWCfuwe15/FSkzu7LXonJMMGMiLyxaK0alCtzGuPIQ==}</accessToken>
+      <accessToken>{AQAAABAAAAAwX4HPYSOaFK/7Nn9gP+tz2ozGtRucoRf7bfVAR/VlzFnq0+XqYolrMhQZcYPRWVtfnGTw0zOmwPebRE+TyBcQTg==}</accessToken>
     </org.jenkinsci.plugins.GithubAccessTokenProperty>
   </properties>
 </user>
