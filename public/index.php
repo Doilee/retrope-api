@@ -1,6 +1,6 @@
 <?php
 
-12phpinfo();
+
 
 /**
  * Laravel - A PHP Framework For Web Artisans
