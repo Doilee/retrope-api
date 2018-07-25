@@ -31,9 +31,9 @@
   <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
   <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
   <triggers>
-    <com.cloudbees.jenkins.GitHubPushTrigger plugin="github@1.29.2">
-      <spec></spec>
-    </com.cloudbees.jenkins.GitHubPushTrigger>
+    <hudson.triggers.TimerTrigger>
+      <spec>*/2 * * * * </spec>
+    </hudson.triggers.TimerTrigger>
   </triggers>
   <concurrentBuild>false</concurrentBuild>
   <customWorkspace>/home/forge/retroapi.samhoud.io</customWorkspace>

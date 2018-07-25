@@ -13,6 +13,7 @@ yarn-error.log
 .env
 .DS_Store
 
+jobs/RetroApi LIVE/config.xml
 config.xml
 hudson.model.UpdateCenter.xml
 hudson.plugins.build_timeout.operations.BuildStepOperation.xml
