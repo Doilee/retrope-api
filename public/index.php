@@ -1,6 +1,6 @@
 <?php
 
-sdgsdg
+12
 
 /**
  * Laravel - A PHP Framework For Web Artisans
