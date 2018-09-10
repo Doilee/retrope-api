@@ -40,6 +40,16 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         return $this->hasMany(UserVerification::class);
     }
 
+    public function players()
+    {
+        return $this->hasMany(Player::class);
+    }
+
+    public function session()
+    {
+        return $this->hasMany(Session::class);
+    }
+
     public function verify()
     {
         $this->verified_at = Carbon::now();

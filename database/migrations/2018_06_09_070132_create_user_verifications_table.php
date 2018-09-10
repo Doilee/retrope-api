@@ -19,9 +19,6 @@ class CreateUserVerificationsTable extends Migration
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
         });
-        Schema::table('users', function (Blueprint $table) {
-            $table->timestamp('verified_at')->nullable();
-        });
     }
     /**
      * Reverse the migrations.
@@ -31,9 +28,5 @@ class CreateUserVerificationsTable extends Migration
     public function down()
     {
         Schema::dropIfExists("user_verifications");
-
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('verified_at');
-        });
     }
 }
