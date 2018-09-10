@@ -25,6 +25,9 @@ Route::get('user/verify/{verification_code}', 'AuthController@verifyUser');
 
 Route::post('password/reset', 'AuthController@resetPassword');
 
+Route::get('login/{driver}', 'Auth\LoginController@redirectToProvider');
+Route::get('login/{driver}/callback', 'Auth\LoginController@handleProviderCallback');
+
 // routes accessible when logged in
 Route::group([
     'middleware' => 'jwt.auth'
