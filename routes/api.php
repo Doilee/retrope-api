@@ -34,10 +34,7 @@ Route::group([
 ], function() use ($router) {
     $router->post('logout', 'AuthController@logout');
 
-    $router->get('users', function() {
-        $users = \App\User::all();
-        return response()->json($users);
-    });
+    $router->get('session/create', 'SessionController@create');
 
     //
 });
