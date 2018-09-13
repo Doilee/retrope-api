@@ -4,6 +4,7 @@ namespace App\Exceptions;
 
 use Exception;
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Validation\UnauthorizedException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -57,6 +58,15 @@ class Handler extends ExceptionHandler
             return response()->json([
                 'message' => $exception->getMessage(),
             ], 401);
+        }
+
+        if ($exception instanceof ModelNotFoundException)
+        {
+            return response()->json([
+                'message' => $exception->getMessage(),
+                'model' => $exception->getModel(),
+                'ids' => $exception->getIds(),
+            ], 404);
         }
 
         if ($exception instanceof HttpException)
