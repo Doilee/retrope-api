@@ -12,8 +12,11 @@ class UsersTableSeeder extends Seeder
      */
     public function run()
     {
+        // Matthijs
         factory(User::class)->create([
-            'nickname' => 'jackass'
+            'nickname' => 'Doilee',
+            'email' => 'matthijs0894@hotmail.com',
+            'password' => bcrypt('jackass')
         ]);
     }
 }
