@@ -9,7 +9,7 @@ class SessionController extends Controller
 {
     public function show($invitationCode)
     {
-        $session = Session::where('invitation_code', $invitationCode)->first();
+        $session = Session::where('invitation_code', $invitationCode)->firstOrFail();
 
         return $session;
     }
@@ -18,6 +18,7 @@ class SessionController extends Controller
     {
         $this->validate($request, [
             'name' => 'required|string|min:2',
+            'timer' => 'nullable|integer|min:0|max:600',
         ]);
 
         /** @var User $host */
@@ -28,12 +29,13 @@ class SessionController extends Controller
         $host->session()->create([
             'name' => $request->get('name'),
             'invitation_code' => $invitationCode,
-            'started_at' => now()
+            'started_at' => now(),
+            'expires_at' => now()->addSeconds($request->get('timer') ?? 0),
         ]);
 
         return response()->json([
             'message' => 'Success',
             'invitation_code' => $invitationCode
-        ]);
+        ], 201);
     }
 }

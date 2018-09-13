@@ -12,10 +12,11 @@ class Session extends Model
         'is_public',
         'invitation_code',
         'started_at',
-        'finished_at'
+        'completed_at',
+        'expires_at',
     ];
 
-    protected $dates = ['started_at', 'finished_at'];
+    protected $dates = ['started_at', 'completed_at', 'expires_at'];
 
     const UPDATED_AT = null;
     const CREATED_AT = null;
