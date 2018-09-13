@@ -14,8 +14,8 @@ class CreatePlayersTable extends Migration
     {
         Schema::create('players', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('user_id');
-            $table->integer('session_id');
+            $table->integer('user_id')->unsigned();
+            $table->integer('session_id')->unsigned();
             $table->softDeletes();
             
             $table->foreign('user_id')->references('id')->on('users');
