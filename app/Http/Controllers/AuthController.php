@@ -1,167 +1,171 @@
 <?php
-
 namespace App\Http\Controllers;
-
-use App\User;
-use App\UserVerification;
+use Illuminate\Auth\Events\Lockout;
+use Illuminate\Foundation\Auth\ThrottlesLogins;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Mail;
-use App\Http\Controllers\Controller;
-use Tymon\JWTAuth\Facades\JWTAuth;
-use Tymon\JWTAuth\JWT;
+use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
+use App\User;
+use Illuminate\Foundation\Auth\RegistersUsers;
+use Illuminate\Support\Facades\Lang;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
-    /**
-     * The request instance.
+    use RegistersUsers, ThrottlesLogins;
+
+       /**
+     * Get a validator for an incoming registration request.
      *
-     * @var \Illuminate\Http\Request
+     * @param  array  $data
+     * @return \Illuminate\Contracts\Validation\Validator
      */
-    private $request;
-    /**
-     * Create a new controller instance.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return void
-     */
-    public function __construct(Request $request) {
-        $this->request = $request;
-    }
-    /**
-     * Create a new token.
-     *
-     * @param  \App\User   $user
-     * @return string
-     */
-    protected function jwt(User $user) {
-        $payload = [
-            'iss' => "lumen-jwt", // Issuer of the token
-            'sub' => $user->id, // Subject of the token
-            'iat' => time(), // Time when JWT was issued.
-            'exp' => time() + 60*60 // Expiration time
-        ];
-
-        // As you can see we are passing `JWT_SECRET` as the second parameter that will
-        // be used to decode the token in the future.
-
-        return JWTAuth::fromUser($user);
-    }
-
-    // public function register(Request $request)
-    // {
-    //     $this->validate($request, [
-    //         'name' => 'required|string|min:2',
-    //         'email' => 'required|email|unique:users',
-    //         'password' => 'required|string|min:6|confirmed'
-    //     ]);
-    //
-    //     $user = new User($request->all());
-    //     $user->password = app('hash')->make($request->get('password'));
-    //
-    //     $user->save();
-    //
-    //     return response()->json([
-    //         'message' => 'User succesfully registered',
-    //     ]);
-    // }
-
-    public function register(Request $request)
+    protected function validator(array $data)
     {
-        $this->validate($request, [
-            'username' => 'required|string|min:2',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|string|min:6|confirmed'
+        return Validator::make($data, [
+            'nickname' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:6|confirmed',
         ]);
+    }
 
-        $user = new User($request->all());
-        $user->password = app('hash')->make($request->get('password'));
-
-        $user->save();
-        $verificationCode = str_random(30); //Generate verification code
-
-        $user->verification()->create([
-            'token' => $verificationCode
+    /**
+     * Create a new user instance after a valid registration.
+     *
+     * @param  array  $data
+     * @return \App\User
+     */
+    protected function create(array $data)
+    {
+        return User::create([
+            'nickname' => $data['nickname'],
+            'email' => $data['email'],
+            'password' => bcrypt($data['password']),
         ]);
+    }
 
-        Mail::send('email.verify', [
-            'name' => $user->username,
-            'verificationCode' => $verificationCode
-        ], function($msg) use ($user) {
-            $msg->to($user->email);
-            $msg->from('admin@retrospectre.com');
-        });
-
+    protected function registered(Request $request, $user)
+    {
         return response()->json([
-            'message' => 'Thanks for signing up! Please check your email to complete your registration.'
-        ]);
+            'message' => 'Successfully created user!'
+        ], 201);
     }
 
     /**
-     * Authenticate a user and return the token if the provided credentials are correct.
+     * Login user and create token
      *
-     * @param  \App\User   $user
-     * @return mixed
+     * @param  Request $request
+     * @return string access_token
+     * @return string token_type
+     * @return string expires_at
      */
-    public function login(Request $request, User $user)
+    public function login(Request $request)
     {
-        $this->validate($request, [
-            'username' => 'required|string',
-            'password' => 'required|string'
+        $request->validate([
+            'email' => 'required|string|email',
+            'password' => 'required|string',
+            'remember_me' => 'boolean'
         ]);
 
-        // Find the user by email
-        $user = User::where('username', '=', $request->get('username'))->first();
+        // If the class is using the ThrottlesLogins trait, we can automatically throttle
+        // the login attempts for this application. We'll key this by the username and
+        // the IP address of the client making these requests into this application.
+        if ($this->hasTooManyLoginAttempts($request)) {
+            event(new Lockout($request));
 
-        if (!$user) {
-            // You wil probably have some sort of helpers or whatever
-            // to make sure that you have the same response format for
-            // differents kind of responses. But let's return the
-            // below respose for now.
-            return response()->json([
-                'error' => 'Email does not exist.'
-            ], 400);
+            return $this->sendLockoutResponse($request);
         }
 
-        // Verify the password and generate the token
-        if (Hash::check($request->get('password'), $user->password)) {
-            return response()->json([
-                'token' => $this->jwt($user)
-            ], 200);
-        }
+        if ($this->attemptLogin($request)) {
+            $this->clearLoginAttempts($request);
 
-        // Bad Request response
-        return response()->json([
-            'error' => 'Email or password is wrong.'
-        ], 400);
-    }
+            $user = $request->user();
+            $tokenResult = $user->createToken('Personal Access Token');
+            $token = $tokenResult->token;
 
-    /**
-     * API Verify User
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function verifyUser($code)
-    {
-        /* @var \App\UserVerification $check */
-        $check = UserVerification::where('token', $code)->first();
+            if ($request->remember_me)
+                $token->expires_at = Carbon::now()->addWeeks(1);
 
-        if($check) {
-            if($check->user->verified_at) {
-                return response()->json([
-                    'message'=> 'Account already verified..'
-                ]);
-            }
-
-            $check->user->verify();
-
-            $check->delete();
+            $token->save();
 
             return response()->json([
-                'message'=> 'You have successfully verified your email address.'
+                'access_token' => $tokenResult->accessToken,
+                'token_type' => 'Bearer',
+                'expires_at' => Carbon::parse(
+                    $tokenResult->token->expires_at
+                )->toDateTimeString()
             ]);
         }
 
-        return response()->json(['success' => false, 'error' => "Verification code is invalid."]);
+        return response()->json([
+            'message' => 'Unauthorized'
+        ], 401);
+
+    }
+  
+    /**
+     * Logout user (Revoke the token)
+     *
+     * @return string message
+     */
+    public function logout(Request $request)
+    {
+        $request->user()->token()->revoke();
+        return response()->json([
+            'message' => 'Successfully logged out'
+        ]);
+    }
+  
+    /**
+     * Get the authenticated User
+     *
+     * @return [json] user object
+     */
+    public function user(Request $request)
+    {
+        return response()->json($request->user());
+    }
+
+
+    /**
+     * Redirect the user after determining they are locked out.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return void
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    protected function sendLockoutResponse(Request $request)
+    {
+        $seconds = $this->limiter()->availableIn(
+            $this->throttleKey($request)
+        );
+
+        throw ValidationException::withMessages([
+            $this->username() => [Lang::get('auth.throttle', ['seconds' => $seconds])],
+        ])->status(429);
+    }
+
+        /**
+     * Attempt to log the user into the application.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return bool
+     */
+    protected function attemptLogin(Request $request)
+    {
+        return $this->guard()->attempt(
+            $request->only($this->username(), 'password'), $request->filled('remember')
+        );
+    }
+
+    /**
+     * Get the login username to be used by the controller.
+     *
+     * @return string
+     */
+    public function username()
+    {
+        return 'email';
     }
 }

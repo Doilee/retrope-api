@@ -15,26 +15,35 @@ Route::get('/', function () use ($router) {
     return App::version();
 });
 
-Route::post('register', 'AuthController@register');
+Route::group([
+    'prefix' => 'auth'
+], function () {
+    Route::post('login', 'AuthController@login');
+    Route::post('recover', 'AuthController@recover');
+    Route::post('register', 'AuthController@register');
+    Route::post('password/reset', 'AuthController@resetPassword');
+    Route::get('user/verify/{verification_code}', 'AuthController@verifyUser');
 
-Route::post('login', 'AuthController@login');
+    Route::get('login/{driver}', 'Auth\LoginController@redirectToProvider');
+    Route::get('login/{driver}/callback', 'Auth\LoginController@handleProviderCallback');
 
-Route::post('recover', 'AuthController@recover');
+    Route::group([
+      'middleware' => 'auth:api'
+    ], function() {
+        Route::get('logout', 'AuthController@logout');
+        Route::get('user', 'AuthController@user');
+        Route::get('session/create', 'SessionController@create');
+    });
+});
 
-Route::get('user/verify/{verification_code}', 'AuthController@verifyUser');
-
-Route::post('password/reset', 'AuthController@resetPassword');
-
-Route::get('login/{driver}', 'Auth\LoginController@redirectToProvider');
-Route::get('login/{driver}/callback', 'Auth\LoginController@handleProviderCallback');
 
 // routes accessible when logged in
-Route::group([
-    'middleware' => 'jwt.auth'
-], function() use ($router) {
-    $router->post('logout', 'AuthController@logout');
-
-    $router->get('session/create', 'SessionController@create');
-
-    //
-});
+// Route::group([
+//     'middleware' => 'jwt.auth'
+// ], function() use ($router) {
+//     $router->post('logout', 'AuthController@logout');
+//
+//     $router->get('session/create', 'SessionController@create');
+//
+//     //
+// });
