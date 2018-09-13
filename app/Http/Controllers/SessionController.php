@@ -7,6 +7,13 @@ use Illuminate\Support\Facades\Auth;
 
 class SessionController extends Controller
 {
+    public function show($invitationCode)
+    {
+        $session = Session::where('invitation_code', $invitationCode)->first();
+
+        return $session;
+    }
+
     public function create(Request $request)
     {
         $this->validate($request, [

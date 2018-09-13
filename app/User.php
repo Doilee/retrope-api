@@ -48,7 +48,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
 
     public function session()
     {
-        return $this->hasMany(Session::class);
+        return $this->hasMany(Session::class, 'host_id');
     }
 
     public function verify()

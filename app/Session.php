@@ -17,9 +17,12 @@ class Session extends Model
 
     protected $dates = ['started_at', 'finished_at'];
 
+    const UPDATED_AT = null;
+    const CREATED_AT = null;
+
     public function host()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'host_id');
     }
 
     public function players()
