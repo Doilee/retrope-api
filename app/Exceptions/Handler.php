@@ -6,6 +6,9 @@ use Exception;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Validation\UnauthorizedException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class Handler extends ExceptionHandler
@@ -49,17 +52,25 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
-        if ($exception instanceof UnauthorizedException || $exception instanceof UnauthorizedHttpException)
+        if ($exception instanceof UnauthorizedException)
         {
             return response()->json([
                 'message' => $exception->getMessage(),
             ], 401);
         }
 
+        if ($exception instanceof HttpException)
+        {
+            return response()->json([
+                'message' => 'HTTP Error',
+                'headers' => $exception->getHeaders(),
+            ], $exception->getStatusCode());
+        }
+
         if ($exception instanceof AuthenticationException)
         {
             return response()->json([
-                'message' => $exception->getMessage(),
+                'message' => $exception->getMessage() . ' Please login before continuing.',
             ], 403);
         }
         if ($exception instanceof Exception)
@@ -67,6 +78,10 @@ class Handler extends ExceptionHandler
 
             return response()->json([
                 'message' => $exception->getMessage(),
+                'line' => $exception->getLine(),
+                'code' => $exception->getCode(),
+                'trace' => $exception->getTrace(),
+                'previous' => $exception->getPrevious()
             ], 500);
         }
 
