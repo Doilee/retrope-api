@@ -31,11 +31,17 @@ Route::group([
       'middleware' => 'auth:api'
     ], function() {
         Route::get('logout', 'AuthController@logout');
-        Route::get('user', 'AuthController@user');
-        Route::get('session/create', 'SessionController@create');
     });
+
 });
 
+Route::group([
+  'middleware' => 'auth:api'
+], function() {
+    Route::get('user', 'AuthController@user');
+
+    Route::post('session/create', 'SessionController@create');
+});
 
 // routes accessible when logged in
 // Route::group([
