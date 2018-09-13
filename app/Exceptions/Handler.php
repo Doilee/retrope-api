@@ -7,6 +7,7 @@ use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Validation\UnauthorizedException;
+use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -67,6 +68,14 @@ class Handler extends ExceptionHandler
                 'model' => $exception->getModel(),
                 'ids' => $exception->getIds(),
             ], 404);
+        }
+
+        if ($exception instanceof ValidationException)
+        {
+            return response()->json([
+                'message' => 'Failed to pass validation.',
+                'details' => $exception->errors(),
+            ], 400);
         }
 
         if ($exception instanceof HttpException)
