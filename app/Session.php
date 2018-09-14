@@ -8,7 +8,6 @@ class Session extends Model
 {
     protected $fillable = [
         'name',
-        'timer',
         'is_public',
         'invitation_code',
         'started_at',
@@ -16,6 +15,7 @@ class Session extends Model
         'expires_at',
     ];
 
+    //todo: Change to datetime?
     protected $dates = ['started_at', 'completed_at', 'expires_at'];
 
     const UPDATED_AT = null;
@@ -29,5 +29,10 @@ class Session extends Model
     public function players()
     {
         return $this->hasMany(Player::class);
+    }
+
+    public function isExpired()
+    {
+        return $this->expires_at->isPast();
     }
 }
