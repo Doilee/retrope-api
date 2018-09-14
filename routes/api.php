@@ -15,6 +15,7 @@ Route::get('/', function () use ($router) {
     return App::version();
 });
 
+// AUTH
 Route::group([
     'prefix' => 'auth'
 ], function () {
@@ -40,10 +41,19 @@ Route::group([
 ], function() {
     Route::get('user', 'AuthController@user');
 
+    // SESSIONS
     Route::post('session/create', 'SessionController@create');
     Route::get('session/{invitationCode}', 'SessionController@show');
 
     Route::put('session/{invitationCode}/participate', 'SessionController@participate');
+
+    Route::post('session/{invitationCode}/retrospective/create', 'RetrospectiveController@create');
+    Route::put('session/{invitationCode}/retrospective/{retrospective}', 'RetrospectiveController@update');
+
+    // RETROSPECTIVES
+    Route::post('retrospective/{retrospective}/like', 'RetroSpectiveController@like');
+    Route::post('retrospective/{retrospective}/dislike', 'RetroSpectiveController@dislike');
+
 });
 
 // routes accessible when logged in
