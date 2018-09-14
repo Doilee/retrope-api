@@ -78,6 +78,14 @@ class Handler extends ExceptionHandler
             ], 400);
         }
 
+        if ($exception instanceof NotFoundHttpException)
+        {
+            return response()->json([
+                'message' => 'API endpoint not found.',
+                'headers' => $exception->getHeaders(),
+            ], 404);
+        }
+
         if ($exception instanceof HttpException)
         {
             return response()->json([
