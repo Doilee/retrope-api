@@ -38,4 +38,18 @@ class SessionController extends Controller
             'invitation_code' => $invitationCode
         ], 201);
     }
+
+    public function participate($invitationCode)
+    {
+        $session = $this->show($invitationCode);
+
+        $player = Auth::user()->players()->create([
+            'session_id' => $session->id,
+        ]);
+
+        return response()->json([
+            'message' => 'Player succesfully added to the session!',
+            'player' => $player
+        ]);
+    }
 }

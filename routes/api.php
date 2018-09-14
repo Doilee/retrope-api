@@ -42,6 +42,8 @@ Route::group([
 
     Route::post('session/create', 'SessionController@create');
     Route::get('session/{invitationCode}', 'SessionController@show');
+
+    Route::put('session/{invitationCode}/participate', 'SessionController@participate');
 });
 
 // routes accessible when logged in
