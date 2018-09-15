@@ -51,8 +51,8 @@ Route::group([
     Route::put('session/{invitationCode}/retrospective/{retrospective}', 'RetrospectiveController@update');
 
     // RETROSPECTIVES
-    Route::post('retrospective/{retrospective}/like', 'RetroSpectiveController@like');
-    Route::post('retrospective/{retrospective}/dislike', 'RetroSpectiveController@dislike');
+    Route::post('retrospective/{retrospective}/like', 'RetrospectiveController@like');
+    Route::post('retrospective/{retrospective}/dislike', 'RetrospectiveController@dislike');
 
 });
 
