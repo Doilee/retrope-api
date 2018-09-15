@@ -15,13 +15,18 @@ class Retrospective extends Model
         return $this->belongsTo(Player::class);
     }
 
+    public function votes()
+    {
+        return $this->hasMany(Vote::class);
+    }
+
     public function likes()
     {
-        return $this->hasMany(Like::class);
+        return $this->votes()->where('value', 1);
     }
 
     public function dislikes()
     {
-        return $this->hasMany(Dislike::class);
+        return $this->votes()->where('value', -1);
     }
 }

@@ -27,45 +27,67 @@ class Player extends Model
 
     public function likes()
     {
-        return $this->hasMany(Like::class);
+        return $this->votes()->where('value', 1);
     }
 
     public function dislikes()
     {
-        return $this->hasMany(Dislike::class);
+        return $this->votes()->where('value', -1);
     }
 
-    public function like(Retrospective $retrospective)
+    public function votes()
     {
-        $like = $this->likes()->where('retrospective_id', $retrospective->id)->first();
+        return $this->hasMany(Vote::class);
+    }
 
-        if ($like) {
-            $like->delete();
+    public function like(Retrospective $retrospective) : bool
+    {
+        $vote = $this->vote($retrospective);
+
+        if ($vote->isLike()) {
+            $vote->delete();
 
             return false;
         }
 
-        $this->likes()->create([
-            'retrospective_id' => $retrospective->id
+        $vote->fill([
+            'value' => 1
         ]);
+
+        $vote->save();
 
         return true;
     }
 
-    public function dislike(Retrospective $retrospective)
+    public function dislike(Retrospective $retrospective) : bool
     {
-        $dislike = $this->dislikes()->where('retrospective_id', $retrospective->id)->first();
+        $vote = $this->vote($retrospective);
 
-        if ($dislike) {
-            $dislike->delete();
+        if ($vote->isDislike()) {
+            $vote->delete();
 
             return false;
         }
 
-        $this->dislikes()->create([
-            'retrospective_id' => $retrospective->id
+        $vote->fill([
+            'value' => -1
         ]);
 
+        $vote->save();
+
         return true;
+    }
+
+    private function vote(Retrospective $retrospective)
+    {
+        $vote = $this->votes()->where('retrospective_id', $retrospective->id)->first();
+
+        if (!$vote) {
+            $vote = $this->votes()->make([
+                'retrospective_id' => $retrospective->id,
+            ]);
+        }
+
+        return $vote;
     }
 }
