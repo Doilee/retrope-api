@@ -15,43 +15,6 @@ class AuthController extends Controller
 {
     use RegistersUsers, ThrottlesLogins;
 
-       /**
-     * Get a validator for an incoming registration request.
-     *
-     * @param  array  $data
-     * @return \Illuminate\Contracts\Validation\Validator
-     */
-    protected function validator(array $data)
-    {
-        return Validator::make($data, [
-            'nickname' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:6|confirmed',
-        ]);
-    }
-
-    /**
-     * Create a new user instance after a valid registration.
-     *
-     * @param  array  $data
-     * @return \App\User
-     */
-    protected function create(array $data)
-    {
-        return User::create([
-            'nickname' => $data['nickname'],
-            'email' => $data['email'],
-            'password' => bcrypt($data['password']),
-        ]);
-    }
-
-    protected function registered(Request $request, $user)
-    {
-        return response()->json([
-            'message' => 'Successfully created user!'
-        ], 201);
-    }
-
     /**
      * Login user and create token
      *
@@ -116,17 +79,54 @@ class AuthController extends Controller
             'message' => 'Successfully logged out'
         ]);
     }
-  
+
     /**
      * Get the authenticated User
      *
-     * @return [json] user object
+     * @param Request $request
+     *
+     * @return \Illuminate\Http\JsonResponse [json] user object
      */
-    public function user(Request $request)
+    public function loginAsGuest(Request $request)
     {
-        return response()->json($request->user());
+        $this->validate($request, [
+            'nickname' => 'required|string|min:2|max:255',
+        ]);
+
+        $user = new User([
+            'nickname' => $request->get('nickname'),
+            'email' => uniqid() . '@retrope.com',
+            'password' => bcrypt(uniqid()),
+            'driver' => 'guest',
+        ]);
+
+        $user->save();
+
+        $tokenResult = $user->createToken('Personal Access Token');
+        $token = $tokenResult->token;
+
+        $token->expires_at = Carbon::now()->addHours(12);
+
+        $token->save();
+
+        return response()->json([
+            'access_token' => $tokenResult->accessToken,
+            'token_type' => 'Bearer',
+            'expires_at' => Carbon::parse(
+                $tokenResult->token->expires_at
+            )->toDateTimeString()
+        ]);
     }
 
+    /**
+     * Get the login username to be used by the controller.
+     *
+     * @return string
+     */
+    public function username()
+    {
+        return 'email';
+    }
 
     /**
      * Redirect the user after determining they are locked out.
@@ -160,12 +160,39 @@ class AuthController extends Controller
     }
 
     /**
-     * Get the login username to be used by the controller.
+     * Get a validator for an incoming registration request.
      *
-     * @return string
+     * @param  array  $data
+     * @return \Illuminate\Contracts\Validation\Validator
      */
-    public function username()
+    protected function validator(array $data)
     {
-        return 'email';
+        return Validator::make($data, [
+            'nickname' => 'required|string|min:2|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:6|confirmed',
+        ]);
+    }
+
+    /**
+     * Create a new user instance after a valid registration.
+     *
+     * @param  array  $data
+     * @return \App\User
+     */
+    protected function create(array $data)
+    {
+        return User::create([
+            'nickname' => $data['nickname'],
+            'email' => $data['email'],
+            'password' => bcrypt($data['password']),
+        ]);
+    }
+
+    protected function registered(Request $request, $user)
+    {
+        return response()->json([
+            'message' => 'Successfully created user!'
+        ], 201);
     }
 }

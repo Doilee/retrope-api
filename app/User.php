@@ -15,6 +15,9 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
 {
     use Authenticatable, Authorizable, HasApiTokens;
 
+    const GUEST_DRIVER = 'admin';
+    const DEFAULT_DRIVER = 'default';
+
     /**
      * The attributes that are mass assignable.
      *
@@ -56,6 +59,10 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         $this->verified_at = Carbon::now();
 
         $this->save();
+    }
+
+    public function isGuest() {
+        return $this->driver === self::GUEST_DRIVER;
     }
 
     /**

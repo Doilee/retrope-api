@@ -22,7 +22,7 @@ class SessionController extends Controller
         ]);
 
         /** @var User $host */
-        $host = Auth::user();
+        $host = auth()->user();
 
         $invitationCode = str_random();
 
@@ -39,11 +39,13 @@ class SessionController extends Controller
         ], 201);
     }
 
-    public function participate($invitationCode)
+    public function participate(Request $request, $invitationCode)
     {
+        $user = auth()->user();
+
         $session = $this->show($invitationCode);
 
-        $player = Auth::user()->players()->create([
+        $player = $user->players()->create([
             'session_id' => $session->id,
         ]);
 
