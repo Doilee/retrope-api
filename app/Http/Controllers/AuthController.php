@@ -11,6 +11,10 @@ use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
+/**
+ * Class AuthController
+ * @package App\Http\Controllers
+ */
 class AuthController extends Controller
 {
     use RegistersUsers, ThrottlesLogins;
@@ -90,12 +94,13 @@ class AuthController extends Controller
     public function loginAsGuest(Request $request)
     {
         $this->validate($request, [
-            'nickname' => 'required|string|min:2|max:255',
+            'nickname' => 'string|min:2|max:255',
+            'email' => 'required|email',
         ]);
 
         $user = new User([
-            'nickname' => $request->get('nickname'),
-            'email' => uniqid() . '@retrope.com',
+            'nickname' => $request->get('nickname') ?? 'retropist-' . uniqid(),
+            'email' => $request->get('email'),
             'password' => bcrypt(uniqid()),
             'driver' => 'guest',
         ]);
@@ -189,6 +194,12 @@ class AuthController extends Controller
         ]);
     }
 
+    /**
+     * @param Request $request
+     * @param $user
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
     protected function registered(Request $request, $user)
     {
         return response()->json([

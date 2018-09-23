@@ -9,6 +9,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\UnauthorizedException;
 
+/**
+ * Class RetrospectiveController
+ * @package App\Http\Controllers
+ */
 class RetrospectiveController extends Controller
 {
     /* @var Player $player */
