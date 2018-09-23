@@ -76,6 +76,27 @@ class SessionController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
+    public function invite(Request $request, Session $session)
+    {
+        $this->validate($request, [
+            'email' => 'required|email',
+        ]);
+
+        Mail::to($request->get('email'))
+            ->send(new ParticipantInvited($session));
+        // mail to email
+
+        return response()->json([
+            'message' => 'Participant invited!'
+        ]);
+    }
+
+    /**
+     * @param Request $request
+     * @param Session $session
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function start(Request $request, Session $session)
     {
         $this->validate($request, [
