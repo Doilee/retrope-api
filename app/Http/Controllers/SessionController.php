@@ -1,24 +1,35 @@
 <?php namespace App\Http\Controllers;
 
+use App\Mail\ParticipantInvited;
 use App\Session;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Mail;
 
+/**
+ * Class SessionController
+ * @package App\Http\Controllers
+ */
 class SessionController extends Controller
 {
+    /**
+     * @param $invitationCode
+     */
     public function show($invitationCode)
     {
-        $session = Session::where('invitation_code', $invitationCode)->firstOrFail();
-
-        return $session;
+        return $this->sessionFromCode($invitationCode);
     }
 
+    /**
+     * @param Request $request
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function create(Request $request)
     {
         $this->validate($request, [
-            'name' => 'required|string|min:2',
-            'timer' => 'nullable|integer|min:0|max:600',
+            'name' => 'required|string|min:2'
         ]);
 
         /** @var User $host */
@@ -28,9 +39,7 @@ class SessionController extends Controller
 
         $host->session()->create([
             'name' => $request->get('name'),
-            'invitation_code' => $invitationCode,
-            'started_at' => now(),
-            'expires_at' => now()->addSeconds($request->get('timer') ?? 0),
+            'invitation_code' => $invitationCode
         ]);
 
         return response()->json([
@@ -39,11 +48,17 @@ class SessionController extends Controller
         ], 201);
     }
 
+    /**
+     * @param Request $request
+     * @param $invitationCode
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function participate(Request $request, $invitationCode)
     {
         $user = auth()->user();
 
-        $session = $this->show($invitationCode);
+        $session = $this->sessionFromCode($invitationCode);
 
         $player = $user->players()->create([
             'session_id' => $session->id,
@@ -53,5 +68,32 @@ class SessionController extends Controller
             'message' => 'Player succesfully added to the session!',
             'player' => $player
         ]);
+    }
+
+    /**
+     * @param Request $request
+     * @param Session $session
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function start(Request $request, Session $session)
+    {
+        $this->validate($request, [
+            'timer' => 'nullable|integer|max:600'
+        ]);
+
+        $session->start($request->get('timer'));
+
+        return response()->json([
+            'message' => 'Session started.'
+        ]);
+    }
+
+    /**
+     * @param string $invitationCode
+     */
+    private function sessionFromCode(string $invitationCode)
+    {
+        $session = Session::where('invitation_code', $invitationCode)->firstOrFail();
     }
 }

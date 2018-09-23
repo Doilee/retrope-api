@@ -18,8 +18,8 @@ class CreateSessionsTable extends Migration
             $table->string('name');
             $table->boolean('is_public')->default(true);
             $table->string('invitation_code');
-            $table->dateTime('expires_at');
-            $table->dateTime('started_at');
+            $table->dateTime('expires_at')->nullable();
+            $table->dateTime('started_at')->nullable();
             $table->dateTime('completed_at')->nullable();
             $table->softDeletes();
 

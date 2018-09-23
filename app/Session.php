@@ -35,4 +35,12 @@ class Session extends Model
     {
         return $this->expires_at->isPast();
     }
+
+    public function start($timer = null)
+    {
+        $this->started_at = now();
+        $this->expires_at = now()->addSeconds($timer ?? 0);
+
+        return $this->save();
+    }
 }
