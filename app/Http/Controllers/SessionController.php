@@ -112,9 +112,13 @@ class SessionController extends Controller
 
     /**
      * @param string $invitationCode
+     *
+     * @return \Illuminate\Database\Eloquent\Model|static
      */
     private function sessionFromCode(string $invitationCode)
     {
         $session = Session::where('invitation_code', $invitationCode)->firstOrFail();
+
+        return $session;
     }
 }
