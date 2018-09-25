@@ -11,7 +11,8 @@ class invitation extends Model
 {
     protected $fillable = [
         'send_at',
-        'scheduled_at'
+        'scheduled_at',
+        'code'
     ];
 
     protected $dates = [

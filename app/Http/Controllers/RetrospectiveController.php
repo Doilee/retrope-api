@@ -22,14 +22,12 @@ class RetrospectiveController extends Controller
      * Create a retrospective
      *
      * @param Request $request
-     * @param $invitationCode
+     * @param Session $session
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function create(Request $request, $invitationCode)
+    public function create(Request $request, Session $session)
     {
-        $session = Session::where('invitation_code', $invitationCode)->firstOrFail();
-
         $this->validatePlayer($session);
 
         $this->validate($request, [
@@ -56,15 +54,13 @@ class RetrospectiveController extends Controller
      * Update the contents of a retrospective
      *
      * @param Request $request
-     * @param $invitationCode
+     * @param Session $session
      * @param Retrospective $retrospective
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function update(Request $request, $invitationCode, Retrospective $retrospective)
+    public function update(Request $request, Session $session, Retrospective $retrospective)
     {
-        $session = Session::where('invitation_code', $invitationCode)->firstOrFail();
-
         $this->validatePlayer($session);
 
         $this->validate($request, [

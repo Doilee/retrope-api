@@ -9,7 +9,6 @@ class Session extends Model
     protected $fillable = [
         'name',
         'is_public',
-        'invitation_code',
         'started_at',
         'completed_at',
         'expires_at',

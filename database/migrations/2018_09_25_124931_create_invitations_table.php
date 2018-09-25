@@ -16,6 +16,7 @@ class CreateInvitationsTable extends Migration
         Schema::create('invitations', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('session_id');
+            $table->string('code');
             $table->dateTime('scheduled_at')->nullable();
             $table->dateTime('send_at')->nullable();
             $table->timestamps();

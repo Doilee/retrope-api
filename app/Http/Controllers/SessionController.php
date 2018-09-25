@@ -1,5 +1,6 @@
 <?php namespace App\Http\Controllers;
 
+use App\invitation;
 use App\Mail\ParticipantInvited;
 use App\Session;
 use App\User;
@@ -14,11 +15,11 @@ use Mail;
 class SessionController extends Controller
 {
     /**
-     * @param $invitationCode
+     * @param Session $session
      */
-    public function show($invitationCode)
+    public function show(Session $session)
     {
-        return $this->sessionFromCode($invitationCode);
+        return $session;
     }
 
     /**
@@ -35,11 +36,8 @@ class SessionController extends Controller
         /** @var User $host */
         $host = auth()->user();
 
-        $invitationCode = str_random();
-
         $session = $host->session()->create([
-            'name' => $request->get('name'),
-            'invitation_code' => $invitationCode
+            'name' => $request->get('name')
         ]);
 
         return response()->json([
@@ -110,23 +108,6 @@ class SessionController extends Controller
         ]);
     }
 
-    public function scheduleInvitation(Request $request, Session $session)
-    {
-        $this->validate($request, [
-            'scheduled_at' => 'required|date|after:' . now()->toDateTimeString()
-        ]);
-
-        $invitation = $session->invitations()->where('scheduled_at', $request->get('scheduled_at'))->first() ??
-            $session->invitations()->create([
-                'scheduled_at' => $request->get('scheduled_at')
-            ]);
-
-        return response()->json([
-            'message' => 'Invitation scheduled.',
-            'invitation' => $invitation
-        ]);
-    }
-
     /**
      * @param string $invitationCode
      *
@@ -134,8 +115,8 @@ class SessionController extends Controller
      */
     private function sessionFromCode(string $invitationCode)
     {
-        $session = Session::where('invitation_code', $invitationCode)->firstOrFail();
+        $invitation = Invitation::where('code', $invitationCode)->firstOrFail();
 
-        return $session;
+        return $invitation->session;
     }
 }
