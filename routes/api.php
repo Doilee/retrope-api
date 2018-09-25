@@ -50,15 +50,15 @@ Route::group([
     Route::put('session/{invitationCode}/participate', 'SessionController@participate');
 
     Route::put('session/{session}/start', 'SessionController@start');
-    Route::put('session/{session}/invite', 'SessionController@invite');
+    Route::post('session/{session}/invite', 'SessionController@invite');
     Route::put('session/{session}/schedule', 'SessionController@scheduleInvitation');
 
     Route::post('session/{invitationCode}/retrospective/create', 'RetrospectiveController@create');
     Route::put('session/{invitationCode}/retrospective/{retrospective}', 'RetrospectiveController@update');
 
     // RETROSPECTIVES
-    Route::post('retrospective/{retrospective}/like', 'RetrospectiveController@like');
-    Route::post('retrospective/{retrospective}/dislike', 'RetrospectiveController@dislike');
+    Route::put('retrospective/{retrospective}/like', 'RetrospectiveController@like');
+    Route::put('retrospective/{retrospective}/dislike', 'RetrospectiveController@dislike');
 
 });
 
