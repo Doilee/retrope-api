@@ -25,6 +25,8 @@ Route::group([
     Route::post('password/reset', 'AuthController@resetPassword');
     Route::get('user/verify/{verification_code}', 'AuthController@verifyUser');
 
+    Route::post('login/guest', 'AuthController@guestSignIn');
+
     Route::get('login/{driver}', 'Auth\LoginController@redirectToProvider');
     Route::get('login/{driver}/callback', 'Auth\LoginController@handleProviderCallback');
 

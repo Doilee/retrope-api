@@ -91,7 +91,7 @@ class AuthController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse [json] user object
      */
-    public function loginAsGuest(Request $request)
+    public function guestSignIn(Request $request)
     {
         $this->validate($request, [
             'nickname' => 'string|min:2|max:255',
