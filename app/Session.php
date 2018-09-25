@@ -33,7 +33,7 @@ class Session extends Model
 
     public function isExpired()
     {
-        return $this->expires_at->isPast();
+        return $this->expires_at ? $this->expires_at->isPast() : false;
     }
 
     public function start($timer = null)
