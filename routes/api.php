@@ -49,6 +49,9 @@ Route::group([
 
     Route::put('session/{invitationCode}/participate', 'SessionController@participate');
 
+    Route::put('session/{session}/start', 'SessionController@start');
+    Route::put('session/{session}/invite', 'SessionController@invite');
+
     Route::post('session/{invitationCode}/retrospective/create', 'RetrospectiveController@create');
     Route::put('session/{invitationCode}/retrospective/{retrospective}', 'RetrospectiveController@update');
 
