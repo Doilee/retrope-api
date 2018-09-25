@@ -43,4 +43,9 @@ class Session extends Model
 
         return $this->save();
     }
+
+    public function invitations()
+    {
+        return $this->hasMany(Invitation::class);
+    }
 }
