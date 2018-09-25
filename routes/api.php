@@ -51,6 +51,7 @@ Route::group([
 
     Route::put('session/{session}/start', 'SessionController@start');
     Route::put('session/{session}/invite', 'SessionController@invite');
+    Route::put('session/{session}/schedule', 'SessionController@scheduleInvitation');
 
     Route::post('session/{invitationCode}/retrospective/create', 'RetrospectiveController@create');
     Route::put('session/{invitationCode}/retrospective/{retrospective}', 'RetrospectiveController@update');
