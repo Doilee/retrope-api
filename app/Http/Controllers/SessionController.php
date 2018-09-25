@@ -58,7 +58,7 @@ class SessionController extends Controller
 
         $session = $this->sessionFromCode($invitationCode);
 
-        $player = $user->players()->create([
+        $player = $user->players()->updateOrCreate([
             'session_id' => $session->id,
         ]);
 
