@@ -37,14 +37,14 @@ class SessionController extends Controller
 
         $invitationCode = str_random();
 
-        $host->session()->create([
+        $session = $host->session()->create([
             'name' => $request->get('name'),
             'invitation_code' => $invitationCode
         ]);
 
         return response()->json([
             'message' => 'Success',
-            'invitation_code' => $invitationCode
+            'session' => $session
         ], 201);
     }
 
