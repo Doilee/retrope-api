@@ -110,6 +110,23 @@ class SessionController extends Controller
         ]);
     }
 
+    public function scheduleInvitation(Request $request, Session $session)
+    {
+        $this->validate($request, [
+            'scheduled_at' => 'required|date|after:' . now()->toDateTimeString()
+        ]);
+
+        $invitation = $session->invitations()->where('scheduled_at', $request->get('scheduled_at'))->first() ??
+            $session->invitations()->create([
+                'scheduled_at' => $request->get('scheduled_at')
+            ]);
+
+        return response()->json([
+            'message' => 'Invitation scheduled.',
+            'invitation' => $invitation
+        ]);
+    }
+
     /**
      * @param string $invitationCode
      *
