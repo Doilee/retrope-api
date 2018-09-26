@@ -6,6 +6,7 @@ use Exception;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Routing\Exceptions\InvalidSignatureException;
 use Illuminate\Validation\UnauthorizedException;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -89,7 +90,7 @@ class Handler extends ExceptionHandler
         if ($exception instanceof HttpException)
         {
             return response()->json([
-                'message' => 'HTTP Error',
+                'message' => $exception->getMessage(),
                 'headers' => $exception->getHeaders(),
             ], $exception->getStatusCode());
         }
@@ -97,8 +98,9 @@ class Handler extends ExceptionHandler
         if ($exception instanceof AuthenticationException)
         {
             return response()->json([
-                'message' => $exception->getMessage() . ' Please login before continuing.',
-            ], 403);
+                'message' => $exception->getMessage(),
+                'guards' => $exception->guards(),
+            ], 402);
         }
         if ($exception instanceof Exception)
         {
