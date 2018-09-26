@@ -19,13 +19,11 @@ Route::get('/', function () use ($router) {
 Route::group([
     'prefix' => 'auth'
 ], function () {
-    Route::get('email/verify', 'Auth\VerificationController@show');
-    Route::get('email/resend', 'Auth\VerificationController@resend');
 
     Route::post('login', 'AuthController@login');
-    Route::post('recover', 'AuthController@recover');
     Route::post('register', 'AuthController@register');
-    Route::post('password/reset', 'AuthController@resetPassword');
+    Route::post('password/reset', 'Auth\ForgotPasswordController@sendResetLinkEmail');
+    // Route::post('recover', 'AuthController@recover');
     // Route::get('user/verify/{verification_code}', 'AuthController@verifyUser');
 
     Route::post('login/guest', 'AuthController@guestSignIn');
@@ -46,6 +44,9 @@ Route::group([
 ], function() {
     Route::get('me', 'UserController@me');
 
+    Route::put('email/verify/{user}', 'Auth\VerificationController@verify')->middleware('signed')->name('verification.verify');
+    Route::post('email/resend', 'Auth\VerificationController@resend');
+
     // SESSIONS
     Route::post('session/create', 'SessionController@create');
     Route::get('session/{session}', 'SessionController@show');
@@ -65,14 +66,3 @@ Route::group([
     Route::put('retrospective/{retrospective}/dislike', 'RetrospectiveController@dislike');
 
 });
-
-// routes accessible when logged in
-// Route::group([
-//     'middleware' => 'jwt.auth'
-// ], function() use ($router) {
-//     $router->post('logout', 'AuthController@logout');
-//
-//     $router->get('session/create', 'SessionController@create');
-//
-//     //
-// });
