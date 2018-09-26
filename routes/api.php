@@ -19,11 +19,15 @@ Route::get('/', function () use ($router) {
 Route::group([
     'prefix' => 'auth'
 ], function () {
+    Route::get('email/verify', 'Auth\VerificationController@show');
+    Route::get('email/verify/{id}', 'Auth\VerificationController@verify');
+    Route::get('email/resend', 'Auth\VerificationController@resend');
+
     Route::post('login', 'AuthController@login');
     Route::post('recover', 'AuthController@recover');
     Route::post('register', 'AuthController@register');
     Route::post('password/reset', 'AuthController@resetPassword');
-    Route::get('user/verify/{verification_code}', 'AuthController@verifyUser');
+    // Route::get('user/verify/{verification_code}', 'AuthController@verifyUser');
 
     Route::post('login/guest', 'AuthController@guestSignIn');
 

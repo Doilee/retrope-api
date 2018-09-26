@@ -4,16 +4,18 @@ namespace App;
 
 use Carbon\Carbon;
 use Illuminate\Auth\Authenticatable;
+use Illuminate\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\Access\Authorizable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
-use Tymon\JWTAuth\Contracts\JWTSubject;
+use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
+use Illuminate\Contracts\Auth\MustVerifyEmail as MustVerifyEmailContract;
 
-class User extends Model implements AuthenticatableContract, AuthorizableContract
+class User extends Model implements AuthenticatableContract, AuthorizableContract, MustVerifyEmailContract
 {
-    use Authenticatable, Authorizable, HasApiTokens;
+    use Authenticatable, Authorizable, HasApiTokens, Notifiable, MustVerifyEmail;
 
     const GUEST_DRIVER = 'admin';
     const DEFAULT_DRIVER = 'default';
@@ -27,7 +29,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         'nickname',
         'email',
         'password',
-        'verified_at'
+        'email_verified_at'
     ];
 
     /**
@@ -39,11 +41,6 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         'password',
     ];
 
-    public function verification()
-    {
-        return $this->hasMany(UserVerification::class);
-    }
-
     public function players()
     {
         return $this->hasMany(Player::class);
@@ -54,34 +51,8 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         return $this->hasMany(Session::class, 'host_id');
     }
 
-    public function verify()
+    public function isGuest()
     {
-        $this->verified_at = Carbon::now();
-
-        $this->save();
-    }
-
-    public function isGuest() {
         return $this->driver === self::GUEST_DRIVER;
-    }
-
-    /**
-     * Get the identifier that will be stored in the subject claim of the JWT.
-     *
-     * @return mixed
-     */
-    public function getJWTIdentifier()
-    {
-        return $this->getKey();
-    }
-
-    /**
-     * Return a key value array, containing any custom claims to be added to the JWT.
-     *
-     * @return array
-     */
-    public function getJWTCustomClaims()
-    {
-        return [];
     }
 }
