@@ -20,7 +20,6 @@ Route::group([
     'prefix' => 'auth'
 ], function () {
     Route::get('email/verify', 'Auth\VerificationController@show');
-    Route::get('email/verify/{id}', 'Auth\VerificationController@verify');
     Route::get('email/resend', 'Auth\VerificationController@resend');
 
     Route::post('login', 'AuthController@login');

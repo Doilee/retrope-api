@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\User;
 use Illuminate\Auth\Events\Verified;
-use Illuminate\Foundation\Auth\VerifiesEmails;
 use Illuminate\Http\Request;
 
 class VerificationController extends Controller
@@ -22,7 +22,6 @@ class VerificationController extends Controller
 
     public function __construct()
     {
-        $this->middleware('signed')->only('verify');
         $this->middleware('throttle:6,1')->only('verify', 'resend');
     }
 
@@ -32,9 +31,9 @@ class VerificationController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function verify(Request $request)
+    public function verify(Request $request, User $user)
     {
-        if ($request->route('id') == $request->user()->getKey() &&
+        if ($user->id == $request->user()->getKey() &&
             $request->user()->markEmailAsVerified()) {
             event(new Verified($request->user()));
         }
