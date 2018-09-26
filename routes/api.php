@@ -45,7 +45,7 @@ Route::group([
 Route::group([
   'middleware' => 'auth:api'
 ], function() {
-    Route::get('user', 'AuthController@user');
+    Route::get('me', 'UserController@me');
 
     // SESSIONS
     Route::post('session/create', 'SessionController@create');

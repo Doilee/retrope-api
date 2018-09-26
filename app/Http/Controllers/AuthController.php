@@ -19,6 +19,10 @@ class AuthController extends Controller
 {
     use RegistersUsers, ThrottlesLogins;
 
+    public function __construct()
+    {
+        $this->middleware('throttle:6,1')->only('login');
+    }
     /**
      * Login user and create token
      *
@@ -70,11 +74,6 @@ class AuthController extends Controller
         ], 401);
 
     }
-
-    public function user()
-    {
-        return auth()->user();
-    }
   
     /**
      * Logout user (Revoke the token)
@@ -99,12 +98,12 @@ class AuthController extends Controller
     public function guestSignIn(Request $request)
     {
         $this->validate($request, [
-            'nickname' => 'string|min:2|max:255',
+            'name' => 'string|min:2|max:255',
             'email' => 'required|email',
         ]);
 
         $user = new User([
-            'nickname' => $request->get('nickname') ?? 'retropist-' . uniqid(),
+            'name' => $request->get('name') ?? 'retropist-' . uniqid(),
             'email' => $request->get('email'),
             'password' => bcrypt(uniqid()),
             'driver' => 'guest',
@@ -178,7 +177,7 @@ class AuthController extends Controller
     protected function validator(array $data)
     {
         return Validator::make($data, [
-            'nickname' => 'required|string|min:2|max:255',
+            'name' => 'required|string|min:2|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6|confirmed',
         ]);
@@ -193,7 +192,7 @@ class AuthController extends Controller
     protected function create(array $data)
     {
         return User::create([
-            'nickname' => $data['nickname'],
+            'name' => $data['nickname'],
             'email' => $data['email'],
             'password' => bcrypt($data['password']),
         ]);

@@ -28,7 +28,7 @@ class LoginController extends Controller
         $user = Socialite::driver($driver)->stateless()->user();
 
         $user = User::createOrUpdate([
-            'nickname' => $user->getNickname(),
+            'name' => $user->getNickname(),
         ],[
             'email' => $user->getEmail(),
             'driver' => $driver
