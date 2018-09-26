@@ -9,16 +9,14 @@ class Session extends Model
     protected $fillable = [
         'name',
         'is_public',
-        'started_at',
-        'completed_at',
+        'starts_at',
         'expires_at',
+        'completed_at',
+        'scheduled_at'
     ];
 
     //todo: Change to datetime?
-    protected $dates = ['started_at', 'completed_at', 'expires_at'];
-
-    const UPDATED_AT = null;
-    const CREATED_AT = null;
+    protected $dates = ['starts_at', 'completed_at', 'expires_at', 'scheduled_at'];
 
     public function host()
     {
@@ -37,14 +35,14 @@ class Session extends Model
 
     public function start($timer = null)
     {
-        $this->started_at = now();
-        $this->expires_at = now()->addSeconds($timer ?? 0);
+        $this->starts_at = now()->toDateTimeString();
+        $this->expires_at = now()->addSeconds($timer ?? 0)->toDateTimeString();
 
         return $this->save();
     }
 
-    public function invitations()
+    public function invites()
     {
-        return $this->hasMany(Invitation::class);
+        return $this->hasMany(Invite::class);
     }
 }
