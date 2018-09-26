@@ -5,6 +5,8 @@ namespace App;
 use Carbon\Carbon;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Auth\MustVerifyEmail;
+use Illuminate\Auth\Passwords\CanResetPassword;
+use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 use Illuminate\Foundation\Auth\Access\Authorizable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
@@ -13,9 +15,13 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
 use Illuminate\Contracts\Auth\MustVerifyEmail as MustVerifyEmailContract;
 
-class User extends Model implements AuthenticatableContract, AuthorizableContract, MustVerifyEmailContract
+/**
+ * Class User
+ * @package App
+ */
+class User extends Model implements AuthenticatableContract, AuthorizableContract, MustVerifyEmailContract, CanResetPasswordContract
 {
-    use Authenticatable, Authorizable, HasApiTokens, Notifiable, MustVerifyEmail;
+    use Authenticatable, Authorizable, CanResetPassword, HasApiTokens, Notifiable, MustVerifyEmail;
 
     const GUEST_DRIVER = 'admin';
     const DEFAULT_DRIVER = 'default';
@@ -26,7 +32,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
      * @var array
      */
     protected $fillable = [
-        'nickname',
+        'name',
         'email',
         'password',
         'email_verified_at'

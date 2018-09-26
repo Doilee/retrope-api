@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateInvitationsTable extends Migration
+class CreateInvitesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,14 @@ class CreateInvitationsTable extends Migration
      */
     public function up()
     {
-        Schema::create('invitations', function (Blueprint $table) {
+        Schema::create('invites', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('session_id');
-            $table->string('code');
-            $table->dateTime('scheduled_at')->nullable();
-            $table->dateTime('send_at')->nullable();
-            $table->timestamps();
-            $table->softDeletes();
+            $table->unsignedInteger('email');
+            $table->string('token', 16)->unique();
+            $table->timestamp('created_at');
+
+            $table->foreign('session_id')->references('id')->on('sessions');
         });
     }
 
@@ -31,6 +31,6 @@ class CreateInvitationsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('invitations');
+        Schema::dropIfExists('invites');
     }
 }

@@ -50,11 +50,12 @@ Route::group([
     Route::post('session/create', 'SessionController@create');
     Route::get('session/{session}', 'SessionController@show');
 
-    Route::put('invitation/{code}/participate', 'SessionController@participate');
-
+    Route::put('session/{session}/join', 'SessionController@join');
     Route::put('session/{session}/start', 'SessionController@start');
-    Route::post('session/{session}/invite', 'SessionController@invite');
-    Route::put('session/{session}/invitation/create', 'InvitationController@create');
+
+    Route::post('session/{session}/invite', 'InvitationController@invite');
+    Route::post('/invite/{token}/accept', 'InvitationController@accept');
+    // Route::put('session/{session}/invitation/create', 'InvitationController@create');
 
     Route::post('session/{session}/retrospective/create', 'RetrospectiveController@create');
     Route::put('session/{session}/retrospective/{retrospective}', 'RetrospectiveController@update');

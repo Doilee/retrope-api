@@ -1,7 +1,7 @@
 <?php namespace App\Http\Controllers;
 
-use App\invitation;
-use App\Mail\ParticipantInvited;
+use App\Invite;
+use App\Mail\PlayerInvited;
 use App\Session;
 use App\User;
 use Illuminate\Http\Request;
@@ -16,6 +16,8 @@ class SessionController extends Controller
 {
     /**
      * @param Session $session
+     *
+     * @return Session
      */
     public function show(Session $session)
     {
@@ -30,14 +32,16 @@ class SessionController extends Controller
     public function create(Request $request)
     {
         $this->validate($request, [
-            'name' => 'required|string|min:2'
+            'name' => 'required|string|min:2',
+            'scheduled_at' => 'nullable|date|after:' . now()->toDateTimeString()
         ]);
 
         /** @var User $host */
         $host = auth()->user();
 
         $session = $host->session()->create([
-            'name' => $request->get('name')
+            'name' => $request->get('name'),
+            'starts_at' => $request->get('scheduled_at'),
         ]);
 
         return response()->json([
@@ -48,44 +52,23 @@ class SessionController extends Controller
 
     /**
      * @param Request $request
-     * @param $invitationCode
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function participate(Request $request, $invitationCode)
-    {
-        $user = auth()->user();
-
-        $session = $this->sessionFromCode($invitationCode);
-
-        $player = $user->players()->updateOrCreate([
-            'session_id' => $session->id,
-        ]);
-
-        return response()->json([
-            'message' => 'Player succesfully added to the session!',
-            'player' => $player
-        ]);
-    }
-
-    /**
-     * @param Request $request
      * @param Session $session
      *
      * @return \Illuminate\Http\JsonResponse
+     * @internal param $invitationCode
+     *
      */
-    public function invite(Request $request, Session $session)
+    public function join(Request $request, Session $session)
     {
-        $this->validate($request, [
-            'email' => 'required|email',
+        $user = auth()->user();
+
+        $player = $session->players()->create([
+            'user_id' => $user->id
         ]);
 
-        Mail::to($request->get('email'))
-            ->send(new ParticipantInvited($session));
-        // mail to email
-
         return response()->json([
-            'message' => 'Participant invited!'
+            'message' => 'User is now ready to play!',
+            'player' => $player
         ]);
     }
 
@@ -106,17 +89,5 @@ class SessionController extends Controller
         return response()->json([
             'message' => 'Session started.'
         ]);
-    }
-
-    /**
-     * @param string $invitationCode
-     *
-     * @return \Illuminate\Database\Eloquent\Model|static
-     */
-    private function sessionFromCode(string $invitationCode)
-    {
-        $invitation = Invitation::where('code', $invitationCode)->firstOrFail();
-
-        return $invitation->session;
     }
 }

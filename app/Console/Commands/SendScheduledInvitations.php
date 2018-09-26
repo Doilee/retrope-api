@@ -2,10 +2,11 @@
 
 namespace App\Console\Commands;
 
+use App\Session;
 use Illuminate\Console\Command;
 
-use App\invitation;
-use App\Mail\ParticipantInvited;
+use App\Invite;
+use App\Mail\PlayerInvited;
 use App\Player;
 use Mail;
 
@@ -42,15 +43,15 @@ class SendScheduledInvitations extends Command
      */
     public function handle()
     {
-        $invitations = Invitation::where('scheduled_at', '<', now()->addMinutes(5)->toDateTimeString())->get();
+        $sessions = Session::where('starts_at', '<', now()->addMinutes(10)->toDateTimeString())
+            ->where('completed_at', '!=', null)
+            ->get();
 
-        $invitations->each(function(Invitation $invitation) {
-            $invitation->session->players()->each(function(Player $player) {
+        $sessions->each(function(Session $session) {
+            $session->players()->each(function(Player $player) {
                 Mail::to($player->user)
-                    ->send(new ParticipantInvited($player->session));
+                    ->send(new PlayerInvited($player->session));
             });
-            $invitation->send_at = now()->toDateTimeString();
-            $invitation->save();
         });
     }
 }

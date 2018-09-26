@@ -6,22 +6,23 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * @property Session session
+ * @property User user
  */
-class invitation extends Model
+class Invite extends Model
 {
     protected $fillable = [
-        'send_at',
-        'scheduled_at',
-        'code'
-    ];
-
-    protected $dates = [
-        'send_at',
-        'scheduled_at'
+        'user_id',
+        'session_id',
+        'token'
     ];
 
     public function session()
     {
         return $this->belongsTo(Session::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }
