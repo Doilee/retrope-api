@@ -43,6 +43,7 @@ Route::group([
   'middleware' => 'auth:api'
 ], function() {
     Route::get('me', 'UserController@me');
+    Route::post('profile/edit', 'UserController@edit');
 
     Route::put('email/verify/{user}', 'Auth\VerificationController@verify')->middleware('signed')->name('verification.verify');
     Route::post('email/resend', 'Auth\VerificationController@resend');
