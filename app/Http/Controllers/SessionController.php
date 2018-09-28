@@ -25,6 +25,24 @@ class SessionController extends Controller
     }
 
     /**
+     * @param Session $session
+     *
+     * @return array
+     */
+    public function timeLeft(Session $session)
+    {
+        $this->middleware('throttle:180,1');
+
+        $votingStartsIn = $session->voting_starts_at ? $session->voting_starts_at->diffInSeconds(now()) : null;
+        $expires = $session->expires_at ? $session->expires_at->diffInSeconds(now()) : null;
+
+        return [
+            'voting_starts_in' => $votingStartsIn,
+            'expires_in' => $expires,
+        ];
+    }
+
+    /**
      * @param Request $request
      *
      * @return \Illuminate\Http\JsonResponse
