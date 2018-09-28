@@ -4,19 +4,31 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ *
+ * @property int $id
+ * @property \Carbon\Carbon|null $voting_starts_at
+ * @property \Carbon\Carbon|null $expires_at
+ * Class Session
+ * @package App
+ */
 class Session extends Model
 {
     protected $fillable = [
         'name',
         'is_public',
+        'scheduled_at',
         'starts_at',
+        'voting_starts_at',
         'expires_at',
-        'completed_at',
-        'scheduled_at'
     ];
 
-    //todo: Change to datetime?
-    protected $dates = ['starts_at', 'completed_at', 'expires_at', 'scheduled_at'];
+    protected $dates = [
+        'scheduled_at',
+        'starts_at',
+        'voting_starts_at',
+        'expires_at',
+    ];
 
     public function host()
     {
@@ -36,7 +48,8 @@ class Session extends Model
     public function start($timer = null)
     {
         $this->starts_at = now()->toDateTimeString();
-        $this->expires_at = now()->addSeconds($timer ?? 0)->toDateTimeString();
+        $this->voting_starts_at = now()->addSeconds($timer ?? 0)->toDateTimeString();
+        $this->expires_at = now()->addSeconds($timer * 2 ?? 0)->toDateTimeString();
 
         return $this->save();
     }

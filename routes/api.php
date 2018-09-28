@@ -51,6 +51,7 @@ Route::group([
     // SESSIONS
     Route::post('session/create', 'SessionController@create');
     Route::get('session/{session}', 'SessionController@show');
+    Route::get('session/{session}/timer', 'SessionController@timeLeft');
 
     Route::put('session/{session}/join', 'SessionController@join');
     Route::put('session/{session}/start', 'SessionController@start');

@@ -17,9 +17,10 @@ class CreateSessionsTable extends Migration
             $table->integer('host_id')->unsigned();
             $table->string('name');
             $table->boolean('is_public')->default(true);
+            $table->dateTime('scheduled_at')->nullable();
             $table->dateTime('starts_at')->nullable();
+            $table->dateTime('voting_starts_at')->nullable();
             $table->dateTime('expires_at')->nullable();
-            $table->dateTime('completed_at')->nullable();
             $table->timestamps();
             $table->softDeletes();
 

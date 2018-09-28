@@ -33,7 +33,8 @@ class SessionController extends Controller
     {
         $this->validate($request, [
             'name' => 'required|string|min:2',
-            'scheduled_at' => 'nullable|date|after:' . now()->toDateTimeString()
+            'scheduled_at' => 'nullable|date|after:' . now()->toDateTimeString(),
+            'timer' => 'nullable|integer|max:600'
         ]);
 
         /** @var User $host */
@@ -41,8 +42,15 @@ class SessionController extends Controller
 
         $session = $host->session()->create([
             'name' => $request->get('name'),
-            'starts_at' => $request->get('scheduled_at'),
+            'scheduled_at' => $request->get('scheduled_at'),
         ]);
+
+        if ($request->has('timer'))
+        {
+            $session->update([
+                'starts_at' => now()->addSeconds($request->get('timer') ?? 0)->toDateTimeString(),
+            ]);
+        }
 
         return response()->json([
             'message' => 'Success',
