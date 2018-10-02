@@ -88,7 +88,14 @@ class SessionController extends Controller
     {
         $user = auth()->user();
 
-        $player = $session->players()->create([
+        if (!$session->is_public) {
+            return response()->json([
+                'message' => 'Session is private!',
+                'session' => $session
+            ]);
+        }
+
+        $player = $session->players()->where([
             'user_id' => $user->id
         ]);
 

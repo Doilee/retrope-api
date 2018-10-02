@@ -33,6 +33,16 @@ class Player extends Model
         return $this->hasMany(Retrospective::class);
     }
 
+    public function votes()
+    {
+        return $this->hasMany(Vote::class);
+    }
+
+    public function invites()
+    {
+        return $this->hasMany(Invite::class);
+    }
+
     public function likes()
     {
         return $this->votes()->where('value', 1);
@@ -41,11 +51,6 @@ class Player extends Model
     public function dislikes()
     {
         return $this->votes()->where('value', -1);
-    }
-
-    public function votes()
-    {
-        return $this->hasMany(Vote::class);
     }
 
     public function like(Retrospective $retrospective) : bool

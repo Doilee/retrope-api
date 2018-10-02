@@ -15,12 +15,11 @@ class CreateInvitesTable extends Migration
     {
         Schema::create('invites', function (Blueprint $table) {
             $table->increments('id');
-            $table->unsignedInteger('session_id');
-            $table->unsignedInteger('email');
+            $table->unsignedInteger('player_id');
             $table->string('token', 16)->unique();
             $table->timestamp('created_at');
 
-            $table->foreign('session_id')->references('id')->on('sessions');
+            $table->foreign('player_id')->references('id')->on('players');
         });
     }
 

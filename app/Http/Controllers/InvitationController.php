@@ -23,13 +23,15 @@ class InvitationController extends Controller
     {
         $this->validate($request, [
             'email' => 'required|email',
+
+        $user = User::where('email', '=', $request->get('email'))->first() ?? $this->createGuestAccount($request->get('email'));
+
+        $player = $session->players()->where('user_id', $user->id)->first() ?? $session->players()->create([
+            'user_id' => $user->id,
         ]);
 
-        $user = $this->createGuestAccount($request->get('email'));
-
         /* @var Invite $invite */
-        $invite = $session->invites()->updateOrCreate([
-            'user_id' => $user->id,
+        $invite = $player->invites()->create([
             'token' => str_random(),
         ]);
 
@@ -46,6 +48,7 @@ class InvitationController extends Controller
      * @param $token
      *
      * @return \Illuminate\Http\JsonResponse
+     * @throws \Exception
      */
     public function accept($token)
     {
@@ -55,12 +58,7 @@ class InvitationController extends Controller
             abort(404);
         }
 
-        $user = $invite->user;
-
-        /* @var Player $player */
-        $player = $invite->session->players()->create([
-            'user_id' => $user->id
-        ]);
+        $user = $invite->player->user;
 
         $tokenResult = $user->createToken('Personal Access Token');
         $token = $tokenResult->token;
@@ -77,7 +75,7 @@ class InvitationController extends Controller
             'expires_at' => Carbon::parse(
                 $token->expires_at
             )->toDateTimeString(),
-            'player' => $player,
+            'player' => $invite->player,
         ]);
     }
 

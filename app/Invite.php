@@ -5,24 +5,17 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * @property Session session
- * @property User user
+ * @property Player player
  */
 class Invite extends Model
 {
     protected $fillable = [
-        'user_id',
-        'session_id',
+        'player_id',
         'token'
     ];
 
-    public function session()
+    public function player()
     {
-        return $this->belongsTo(Session::class);
-    }
-
-    public function user()
-    {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Player::class);
     }
 }
