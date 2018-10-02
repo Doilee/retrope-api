@@ -8,7 +8,7 @@ use Laravel\Socialite\Facades\Socialite;
  * Class LoginController
  * @package App\Http\Controllers
  */
-class LoginController extends Controller
+class OAuthController extends Controller
 {
     /**
      * @param $driver

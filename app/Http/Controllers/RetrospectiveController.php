@@ -136,8 +136,6 @@ class RetrospectiveController extends Controller
 
         $vote = $this->player->vote($retrospective);
 
-        $vote->value = 1;
-
         $vote->save();
 
         return response()->json([

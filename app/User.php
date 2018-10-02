@@ -23,7 +23,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
 {
     use Authenticatable, Authorizable, CanResetPassword, HasApiTokens, Notifiable, MustVerifyEmail;
 
-    const GUEST_DRIVER = 'admin';
+    const GUEST_DRIVER = 'guest';
     const DEFAULT_DRIVER = 'default';
 
     /**

@@ -28,8 +28,8 @@ Route::group([
 
     Route::post('login/guest', 'AuthController@guestSignIn');
 
-    Route::get('login/{driver}', 'Auth\LoginController@redirectToProvider');
-    Route::get('login/{driver}/callback', 'Auth\LoginController@handleProviderCallback');
+    Route::get('login/{driver}', 'Auth\OAuthController@redirectToProvider');
+    Route::get('login/{driver}/callback', 'Auth\OAuthController@handleProviderCallback');
 
     Route::group([
       'middleware' => 'auth:api'

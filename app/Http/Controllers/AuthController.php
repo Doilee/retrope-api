@@ -23,6 +23,7 @@ class AuthController extends Controller
     {
         $this->middleware('throttle:6,1')->only('login');
     }
+
     /**
      * Login user and create token
      *
@@ -30,6 +31,7 @@ class AuthController extends Controller
      * @return string access_token
      * @return string token_type
      * @return string expires_at
+     * @throws ValidationException
      */
     public function login(Request $request)
     {
@@ -103,10 +105,10 @@ class AuthController extends Controller
         ]);
 
         $user = new User([
-            'name' => $request->get('name') ?? 'retropist-' . uniqid(),
+            'name' => $request->get('name'),
             'email' => $request->get('email'),
             'password' => bcrypt(uniqid()),
-            'driver' => 'guest',
+            'driver' => User::GUEST_DRIVER,
         ]);
 
         $user->save();

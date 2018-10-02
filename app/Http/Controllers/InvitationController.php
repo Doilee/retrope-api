@@ -89,7 +89,7 @@ class InvitationController extends Controller
         User::create([
             'email' => $email,
             'password' => bcrypt(uniqid('', true)),
-            'driver' => 'guest',
+            'driver' => User::GUEST_DRIVER,
             'email_verified_at' => now()->toDateTimeString(),
         ]);
     }

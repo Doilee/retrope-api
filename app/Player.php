@@ -6,7 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  *
- * @property Session|null $session
+ * @property Session $session
+ * @property User user
  * Class Player
  * @package App
  */
@@ -56,10 +57,6 @@ class Player extends Model
 
             return false;
         }
-
-        $vote->fill([
-            'value' => 1
-        ]);
 
         $vote->save();
 

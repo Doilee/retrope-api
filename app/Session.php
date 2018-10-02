@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $id
  * @property \Carbon\Carbon|null $voting_starts_at
  * @property \Carbon\Carbon|null $expires_at
+ * @property boolean is_public
  * Class Session
  * @package App
  */
