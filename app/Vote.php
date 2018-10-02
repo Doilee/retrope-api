@@ -8,7 +8,7 @@ class Vote extends Model
 {
     protected $fillable = [
         'player_id',
-        'retrospective_id',
+        'action_id',
         'value',
     ];
 
@@ -16,7 +16,7 @@ class Vote extends Model
 
     public function retrospective()
     {
-        return $this->belongsTo(Retrospective::class);
+        return $this->belongsTo(Action::class);
     }
 
     public function isLike()

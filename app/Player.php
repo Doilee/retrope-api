@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  *
- * @property Session $session
+ * @property Retrospective $retrospective
  * @property User user
  * Class Player
  * @package App
@@ -15,7 +15,7 @@ class Player extends Model
 {
     protected $fillable = [
         'user_id',
-        'session_id',
+        'retrospective_id',
     ];
 
     public function user()
@@ -23,14 +23,14 @@ class Player extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function session()
+    public function retrospective()
     {
-        return $this->belongsTo(Session::class);
+        return $this->belongsTo(Retrospective::class);
     }
 
-    public function retrospectives()
+    public function actions()
     {
-        return $this->hasMany(Retrospective::class);
+        return $this->hasMany(Action::class);
     }
 
     public function votes()
@@ -53,7 +53,7 @@ class Player extends Model
         return $this->votes()->where('value', -1);
     }
 
-    public function like(Retrospective $retrospective) : bool
+    public function like(Action $retrospective) : bool
     {
         $vote = $this->vote($retrospective);
 
@@ -68,7 +68,7 @@ class Player extends Model
         return true;
     }
 
-    public function dislike(Retrospective $retrospective) : bool
+    public function dislike(Action $retrospective) : bool
     {
         $vote = $this->vote($retrospective);
 
@@ -87,13 +87,13 @@ class Player extends Model
         return true;
     }
 
-    public function vote(Retrospective $retrospective)
+    public function vote(Action $retrospective)
     {
-        $vote = $this->votes()->where('retrospective_id', $retrospective->id)->first();
+        $vote = $this->votes()->where('action_id', $retrospective->id)->first();
 
         if (!$vote) {
             $vote = $this->votes()->make([
-                'retrospective_id' => $retrospective->id,
+                'action_id' => $retrospective->id,
             ]);
         }
 

@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Invite;
 use App\Mail\PlayerInvited;
 use App\Player;
-use App\Session;
+use App\Retrospective;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -15,11 +15,11 @@ class InvitationController extends Controller
 {
     /**
      * @param Request $request
-     * @param Session $session
+     * @param Retrospective $retrospective
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function invite(Request $request, Session $session)
+    public function invite(Request $request, Retrospective $retrospective)
     {
         $this->validate($request, [
             'email' => 'required|email',
@@ -27,7 +27,7 @@ class InvitationController extends Controller
 
         $user = User::where('email', '=', $request->get('email'))->first() ?? $this->createGuestAccount($request->get('email'));
 
-        $player = $session->players()->where('user_id', $user->id)->first() ?? $session->players()->create([
+        $player = $retrospective->players()->where('user_id', $user->id)->first() ?? $retrospective->players()->create([
             'user_id' => $user->id,
         ]);
 

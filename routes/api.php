@@ -49,23 +49,23 @@ Route::group([
     Route::post('email/resend', 'Auth\VerificationController@resend');
 
     // SESSIONS
-    Route::post('session/create', 'SessionController@create');
-    Route::get('session/{session}', 'SessionController@show');
-    Route::get('session/{session}/timer', 'SessionController@timeLeft');
+    Route::post('retrospective/create', 'RetrospectiveController@create');
+    Route::get('retrospective/{retrospective}', 'RetrospectiveController@show');
+    Route::get('retrospective/{retrospective}/timer', 'RetrospectiveController@timeLeft');
 
-    Route::put('session/{session}/join', 'SessionController@join');
-    Route::put('session/{session}/start', 'SessionController@start');
+    Route::put('retrospective/{retrospective}/join', 'RetrospectiveController@join');
+    Route::put('retrospective/{retrospective}/start', 'RetrospectiveController@start');
 
-    Route::post('session/{session}/invite', 'InvitationController@invite');
+    Route::post('retrospective/{retrospective}/invite', 'InvitationController@invite');
     Route::post('invite/{token}/accept', 'InvitationController@accept');
-    // Route::put('session/{session}/invitation/create', 'InvitationController@create');
+    // Route::put('retrospective/{retrospective}/invitation/create', 'InvitationController@create');
 
-    // RETROSPECTIVES
-    Route::post('session/{session}/retrospective/create', 'RetrospectiveController@create');
-    Route::put('retrospective/{retrospective}', 'RetrospectiveController@update');
+    // actions
+    Route::post('retrospective/{retrospective}/action/create', 'ActionController@create');
+    Route::put('action/{action}', 'ActionController@update');
 
-    Route::post('retrospective/{retrospective}/vote', 'RetrospectiveController@vote');
-    Route::put('retrospective/{retrospective}/like', 'RetrospectiveController@like');
-    Route::put('retrospective/{retrospective}/dislike', 'RetrospectiveController@dislike');
+    Route::post('action/{action}/vote', 'ActionController@vote');
+    Route::put('action/{action}/like', 'ActionController@like');
+    Route::put('action/{action}/dislike', 'ActionController@dislike');
 
 });
