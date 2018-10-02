@@ -4,6 +4,9 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property Player|null player
+ */
 class Retrospective extends Model
 {
     protected $fillable = [

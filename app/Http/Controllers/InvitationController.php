@@ -9,7 +9,7 @@ use App\Session;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Mail;
+use Illuminate\Support\Facades\Mail;
 
 class InvitationController extends Controller
 {

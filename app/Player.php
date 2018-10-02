@@ -4,6 +4,12 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ *
+ * @property Session|null $session
+ * Class Player
+ * @package App
+ */
 class Player extends Model
 {
     protected $fillable = [
