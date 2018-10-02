@@ -54,20 +54,19 @@ class RetrospectiveController extends Controller
      * Update the contents of a retrospective
      *
      * @param Request $request
-     * @param Session $session
      * @param Retrospective $retrospective
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function update(Request $request, Session $session, Retrospective $retrospective)
+    public function update(Request $request, Retrospective $retrospective)
     {
-        $this->validatePlayer($session);
+        $this->validatePlayer($retrospective->player->session);
 
         $this->validate($request, [
             'feedback' => 'required|string'
         ]);
 
-        if ($session->isExpired())
+        if ($retrospective->player->session->isExpired())
         {
             return response()->json([
                 'message' => 'Session expired',

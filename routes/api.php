@@ -57,11 +57,12 @@ Route::group([
     Route::put('session/{session}/start', 'SessionController@start');
 
     Route::post('session/{session}/invite', 'InvitationController@invite');
-    Route::post('/invite/{token}/accept', 'InvitationController@accept');
+    Route::post('invite/{token}/accept', 'InvitationController@accept');
     // Route::put('session/{session}/invitation/create', 'InvitationController@create');
 
+    // RETROSPECTIVES
     Route::post('session/{session}/retrospective/create', 'RetrospectiveController@create');
-    Route::put('session/{session}/retrospective/{retrospective}', 'RetrospectiveController@update');
+    Route::put('retrospective/{retrospective}', 'RetrospectiveController@update');
 
     // RETROSPECTIVES
     Route::put('retrospective/{retrospective}/like', 'RetrospectiveController@like');
