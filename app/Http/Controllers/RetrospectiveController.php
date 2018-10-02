@@ -130,6 +130,21 @@ class RetrospectiveController extends Controller
             ], 200);
     }
 
+    public function vote(Retrospective $retrospective)
+    {
+        $this->validatePlayer($retrospective->player->session);
+
+        $vote = $this->player->vote($retrospective);
+
+        $vote->value = 1;
+
+        $vote->save();
+
+        return response()->json([
+            'message' => 'One vote has been given.'
+        ], 201);
+    }
+
     /**
      * Check if the player is a part of the session
      *

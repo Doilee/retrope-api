@@ -85,7 +85,7 @@ class Player extends Model
         return true;
     }
 
-    private function vote(Retrospective $retrospective)
+    public function vote(Retrospective $retrospective)
     {
         $vote = $this->votes()->where('retrospective_id', $retrospective->id)->first();
 
