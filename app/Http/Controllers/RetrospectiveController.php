@@ -92,7 +92,7 @@ class RetrospectiveController extends Controller
             ]);
         }
 
-        $player = $retrospective->players()->where([
+        $player = $retrospective->players()->create([
             'user_id' => $user->id
         ]);
 

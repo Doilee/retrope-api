@@ -19,6 +19,8 @@ class CreateActionsTable extends Migration
             $table->string('feedback');
             $table->timestamps();
             $table->softDeletes();
+
+            $table->foreign('player_id')->references('id')->on('players');
         });
     }
 

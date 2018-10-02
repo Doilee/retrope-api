@@ -15,12 +15,12 @@ class CreatePlayersTable extends Migration
         Schema::create('players', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('user_id')->unsigned();
-            $table->integer('session_id')->unsigned();
+            $table->integer('retrospective_id')->unsigned();
             $table->timestamps();
             $table->softDeletes();
             
             $table->foreign('user_id')->references('id')->on('users');
-            $table->foreign('session_id')->references('id')->on('sessions');
+            $table->foreign('retrospective_id')->references('id')->on('retrospectives');
         });
     }
     /**

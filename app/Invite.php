@@ -14,6 +14,8 @@ class Invite extends Model
         'token'
     ];
 
+    const UPDATED_AT = null;
+
     public function player()
     {
         return $this->belongsTo(Player::class);
