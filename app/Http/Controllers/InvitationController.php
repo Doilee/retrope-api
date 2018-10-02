@@ -23,6 +23,7 @@ class InvitationController extends Controller
     {
         $this->validate($request, [
             'email' => 'required|email',
+        ]);
 
         $user = User::where('email', '=', $request->get('email'))->first() ?? $this->createGuestAccount($request->get('email'));
 
