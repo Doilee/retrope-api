@@ -18,6 +18,7 @@ class RetrospectiveController extends Controller
      */
     public function show(Retrospective $retrospective)
     {
+        $retrospective->load('actions');
         return $retrospective;
     }
 

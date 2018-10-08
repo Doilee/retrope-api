@@ -42,6 +42,11 @@ class Retrospective extends Model
         return $this->hasMany(Player::class);
     }
 
+    public function actions()
+    {
+        return $this->hasManyThrough(Action::class, Player::class);
+    }
+
     public function isExpired()
     {
         return $this->expires_at ? $this->expires_at->isPast() : false;
