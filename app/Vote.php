@@ -4,6 +4,10 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property Player|null player
+ * @property Action|null action
+ */
 class Vote extends Model
 {
     protected $fillable = [
@@ -14,7 +18,12 @@ class Vote extends Model
 
     const UPDATED_AT = null;
 
-    public function retrospective()
+    public function player()
+    {
+        return $this->belongsTo(Player::class);
+    }
+
+    public function action()
     {
         return $this->belongsTo(Action::class);
     }

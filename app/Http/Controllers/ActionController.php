@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Player;
 use App\Action;
 use App\Retrospective;
+use App\Vote;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\UnauthorizedException;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 /**
  * Class RetrospectiveController
@@ -83,6 +85,7 @@ class ActionController extends Controller
     }
 
     /**
+     * DEPRECATED
      * Toggle like on a retrospective
      *
      * @param Action $action
@@ -107,6 +110,7 @@ class ActionController extends Controller
     }
 
     /**
+     * DEPRECATED
      * Toggle dislike on a retrospective
      *
      * @param Action $action
@@ -130,9 +134,18 @@ class ActionController extends Controller
             ], 200);
     }
 
+    /**
+     * Vote for any given action as a player, you have a maximum of 5 votes to hand out.
+     * @param Action $action
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function vote(Action $action)
     {
         $this->validatePlayer($action->player->retrospective);
+
+        if ($this->player->votes()->where('value', 1)->count() > 5) {
+            throw new BadRequestHttpException('Maximum votes of 5 have been exhausted by the player.');
+        }
 
         $vote = $this->player->vote($action);
 
@@ -144,12 +157,30 @@ class ActionController extends Controller
     }
 
     /**
+     * Remove a vote for any given action as a player, you have a maximum of 5 votes to hand out.
+     *
+     * @param Vote $vote
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Exception
+     */
+    public function removeVote(Vote $vote)
+    {
+        $this->validatePlayer($vote->player->retrospective);
+
+        $vote->delete();
+
+        return response()->json([
+            'message' => 'Vote has deleted.'
+        ], 200);
+    }
+
+    /**
      * Check if the player is a part of the retrospective
      *
-     * @param $action
+     * @param Retrospective $retrospective
      */
-    private function validatePlayer($action)
+    private function validatePlayer(Retrospective $retrospective)
     {
-        $this->player = $action->players()->where('user_id', Auth::user()->id)->firstOrFail();
+        $this->player = $retrospective->players()->where('user_id', Auth::user()->id)->firstOrFail();
     }
 }
