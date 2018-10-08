@@ -50,7 +50,7 @@ class RetrospectiveController extends Controller
         $this->validate($request, [
             'name' => 'required|string|min:2',
             'scheduled_at' => 'nullable|date|after:' . now()->toDateTimeString(),
-            'timer' => 'nullable|integer|max:600'
+            'starts_at' => 'nullable|date|after:' . now()->toDateTimeString(),
         ]);
 
         /** @var User $host */
@@ -61,10 +61,10 @@ class RetrospectiveController extends Controller
             'scheduled_at' => $request->get('scheduled_at'),
         ]);
 
-        if ($request->has('timer'))
+        if ($request->has('starts_at'))
         {
             $retrospective->update([
-                'starts_at' => now()->addSeconds($request->get('timer') ?? 0)->toDateTimeString(),
+                'starts_at' => $request->get('starts_at'),
             ]);
         }
 

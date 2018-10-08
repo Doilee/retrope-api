@@ -56,7 +56,7 @@ class Retrospective extends Model
     {
         $this->starts_at = now()->toDateTimeString();
         $this->voting_starts_at = now()->addSeconds($timer ?? 0)->toDateTimeString();
-        $this->expires_at = now()->addSeconds($timer * 2 ?? 0)->toDateTimeString();
+        $this->expires_at = now()->addSeconds($timer * 1.5 ?? 0)->toDateTimeString();
 
         return $this->save();
     }
