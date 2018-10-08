@@ -20,6 +20,11 @@ class ActionController extends Controller
     /* @var Player $player */
     protected $player;
 
+    public function show(Action $action)
+    {
+        return $action;
+    }
+
     /**
      * Create a retrospective
      *

@@ -62,6 +62,7 @@ Route::group([
 
     // actions
     Route::post('retrospective/{retrospective}/action/create', 'ActionController@create');
+    Route::get('action/{action}', 'ActionController@show');
     Route::put('action/{action}', 'ActionController@update');
 
     Route::post('action/{action}/vote', 'ActionController@vote');
