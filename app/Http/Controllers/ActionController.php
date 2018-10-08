@@ -48,12 +48,13 @@ class ActionController extends Controller
             ], 410);
         }
 
-        $this->player->actions()->create([
+        $action = $this->player->actions()->create([
             'feedback' => $request->get('feedback')
         ]);
 
         return response()->json([
-            'message' => 'Success!'
+            'message' => 'Success!',
+            'action' => $action
         ], 201);
     }
 
@@ -98,7 +99,9 @@ class ActionController extends Controller
     {
         $this->validatePlayer($action->player->retrospective);
 
-        if ($this->player->votes()->where('value', 1)->count() > 5) {
+        $votesGiven = $this->player->likes()->count();
+
+        if ($votesGiven >= Vote::MAXIMUM_PER_PLAYER) {
             throw new BadRequestHttpException('Maximum votes of 5 have been exhausted by the player.');
         }
 
@@ -107,7 +110,9 @@ class ActionController extends Controller
         $vote->save();
 
         return response()->json([
-            'message' => 'One vote has been given.'
+            'message' => 'One vote has been given.',
+            'vote' => $vote,
+            'votesLeft' => Vote::MAXIMUM_PER_PLAYER - ($votesGiven + 1)
         ], 201);
     }
 

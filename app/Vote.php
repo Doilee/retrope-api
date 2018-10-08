@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Vote extends Model
 {
+    const MAXIMUM_PER_PLAYER = 5;
+
     protected $fillable = [
         'player_id',
         'action_id',
