@@ -90,56 +90,6 @@ class ActionController extends Controller
     }
 
     /**
-     * DEPRECATED
-     * Toggle like on a retrospective
-     *
-     * @param Action $action
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function like(Action $action)
-    {
-        $this->validatePlayer($action->player->retrospective);
-
-        $added = $this->player->like($action);
-
-        if ($added) {
-            return response()->json([
-                'message' => 'Liked!'
-            ], 201);
-        }
-
-        return response()->json([
-                'message' => 'Removed like.'
-            ], 200);
-    }
-
-    /**
-     * DEPRECATED
-     * Toggle dislike on a retrospective
-     *
-     * @param Action $action
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function dislike(Action $action)
-    {
-        $this->validatePlayer($action->player->retrospective);
-
-        $added = $this->player->dislike($action);
-
-        if ($added) {
-            return response()->json([
-                'message' => 'Disliked.'
-            ], 201);
-        }
-
-        return response()->json([
-                'message' => 'Removed dislike.'
-            ], 200);
-    }
-
-    /**
      * Vote for any given action as a player, you have a maximum of 5 votes to hand out.
      * @param Action $action
      * @return \Illuminate\Http\JsonResponse

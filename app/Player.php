@@ -53,49 +53,11 @@ class Player extends Model
         return $this->votes()->where('value', -1);
     }
 
-    public function like(Action $retrospective) : bool
+    public function vote(Action $action)
     {
-        $vote = $this->vote($retrospective);
-
-        if ($vote->isLike()) {
-            $vote->delete();
-
-            return false;
-        }
-
-        $vote->save();
-
-        return true;
-    }
-
-    public function dislike(Action $retrospective) : bool
-    {
-        $vote = $this->vote($retrospective);
-
-        if ($vote->isDislike()) {
-            $vote->delete();
-
-            return false;
-        }
-
-        $vote->fill([
-            'value' => -1
+        $vote = $this->votes()->make([
+            'action_id' => $action->id,
         ]);
-
-        $vote->save();
-
-        return true;
-    }
-
-    public function vote(Action $retrospective)
-    {
-        $vote = $this->votes()->where('action_id', $retrospective->id)->first();
-
-        if (!$vote) {
-            $vote = $this->votes()->make([
-                'action_id' => $retrospective->id,
-            ]);
-        }
 
         return $vote;
     }

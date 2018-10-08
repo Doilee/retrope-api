@@ -66,8 +66,10 @@ Route::group([
     Route::put('action/{action}', 'ActionController@update');
 
     Route::post('action/{action}/vote', 'ActionController@vote');
-    Route::delete('vote/{vote}', 'ActionController@vote');
-    Route::put('action/{action}/like', 'ActionController@like');
-    Route::put('action/{action}/dislike', 'ActionController@dislike');
+    Route::delete('vote/{vote}', 'ActionController@removeVote');
+
+//    DEPRECATED:
+//    Route::put('action/{action}/like', 'ActionController@like');
+//    Route::put('action/{action}/dislike', 'ActionController@dislike');
 
 });
