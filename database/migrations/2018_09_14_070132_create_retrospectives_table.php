@@ -1,5 +1,4 @@
 <?php
-
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
@@ -15,13 +14,19 @@ class CreateRetrospectivesTable extends Migration
     {
         Schema::create('retrospectives', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('player_id')->unsigned();
-            $table->string('feedback');
+            $table->integer('host_id')->unsigned();
+            $table->string('name');
+            $table->boolean('is_public')->default(true);
+            $table->dateTime('scheduled_at')->nullable();
+            $table->dateTime('starts_at')->nullable();
+            $table->dateTime('voting_starts_at')->nullable();
+            $table->dateTime('expires_at')->nullable();
             $table->timestamps();
             $table->softDeletes();
+
+            $table->foreign('host_id')->references('id')->on('users');
         });
     }
-
     /**
      * Reverse the migrations.
      *
@@ -29,6 +34,6 @@ class CreateRetrospectivesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('retrospectives');
+        Schema::dropIfExists("retrospectives");
     }
 }

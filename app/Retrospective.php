@@ -4,29 +4,60 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ *
+ * @property int $id
+ * @property \Carbon\Carbon|null $voting_starts_at
+ * @property \Carbon\Carbon|null $expires_at
+ * @property boolean is_public
+ * @property \Carbon\Carbon|null $starts_at
+ * Class Session
+ * @package App
+ */
 class Retrospective extends Model
 {
     protected $fillable = [
-        'feedback',
+        'name',
+        'is_public',
+        'scheduled_at',
+        'starts_at',
+        'voting_starts_at',
+        'expires_at',
     ];
 
-    public function player()
+    protected $dates = [
+        'scheduled_at',
+        'starts_at',
+        'voting_starts_at',
+        'expires_at',
+    ];
+
+    public function host()
     {
-        return $this->belongsTo(Player::class);
+        return $this->belongsTo(User::class, 'host_id');
     }
 
-    public function votes()
+    public function players()
     {
-        return $this->hasMany(Vote::class);
+        return $this->hasMany(Player::class);
     }
 
-    public function likes()
+    public function actions()
     {
-        return $this->votes()->where('value', 1);
+        return $this->hasManyThrough(Action::class, Player::class);
     }
 
-    public function dislikes()
+    public function isExpired()
     {
-        return $this->votes()->where('value', -1);
+        return $this->expires_at ? $this->expires_at->isPast() : false;
+    }
+
+    public function start($timer = null)
+    {
+        $this->starts_at = now()->toDateTimeString();
+        $this->voting_starts_at = now()->addSeconds($timer ?? 0)->toDateTimeString();
+        $this->expires_at = now()->addSeconds($timer * 1.5 ?? 0)->toDateTimeString();
+
+        return $this->save();
     }
 }

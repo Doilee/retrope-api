@@ -6,12 +6,11 @@
 <body>
 
 <div>
-    You've been invited to a session of RETROPE.
-
+    You've been invited to a retrospective of RETROPE.
     <br>
 
-    @if($invite)
-        Click <a href="{{ env('FRONT_END_URL') . '/invite/' . $invite->code }}">here</a> to join!
+    @if($invite && $invite->player->user->isGuest())
+        Click <a href="{{ env('FRONT_END_URL') . '/invite/' . $invite->token }}">here</a> to join!
     @else
         Click <a href="{{ env('FRONT_END_URL') }}">here</a> to join!
     @endif

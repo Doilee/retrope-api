@@ -1,13 +1,9 @@
-<?php
+<?php namespace App\Http\Controllers;
 
-namespace App\Http\Controllers;
-
-use App\Player;
 use App\Retrospective;
-use App\Session;
+use App\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\UnauthorizedException;
+use Mail;
 
 /**
  * Class RetrospectiveController
@@ -15,129 +11,136 @@ use Illuminate\Validation\UnauthorizedException;
  */
 class RetrospectiveController extends Controller
 {
-    /* @var Player $player */
-    protected $player;
+    /**
+     * @param Retrospective $retrospective
+     *
+     * @return Retrospective
+     */
+    public function show(Retrospective $retrospective)
+    {
+        $retrospective->load('actions');
+        return $retrospective;
+    }
+
 
     /**
-     * Create a retrospective
+     * @param Retrospective $retrospective
      *
+     * @return array
+     */
+    public function timeLeft(Retrospective $retrospective)
+    {
+        $this->middleware('throttle:180,1');
+
+        $currentPhase = 'submitting';
+
+        if (!$retrospective->voting_starts_at || $retrospective->voting_starts_at && $retrospective->voting_starts_at->isPast())
+        {
+            $currentPhase = 'voting';
+            $votingStartsIn = 0;
+        }
+        else
+        {
+            $votingStartsIn = $retrospective->voting_starts_at->diffInSeconds(now());
+        }
+
+        if (!$retrospective->expires_at || $retrospective->expires_at && $retrospective->expires_at->isPast())
+        {
+            $currentPhase = 'done';
+            $expiresIn = 0;
+        }
+        else
+        {
+            $expiresIn = $retrospective->expires_at->diffInSeconds(now());
+        }
+
+
+        return [
+            'current_phase' => $currentPhase,
+            'voting_starts_in' => $votingStartsIn,
+            'expires_in' => $expiresIn,
+        ];
+    }
+
+    /**
      * @param Request $request
-     * @param Session $session
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function create(Request $request, Session $session)
+    public function create(Request $request)
     {
-        $this->validatePlayer($session);
-
         $this->validate($request, [
-            'feedback' => 'required|string'
+            'name' => 'required|string|min:2',
+            'scheduled_at' => 'nullable|date|after:' . now()->toDateTimeString(),
+            'starts_at' => 'nullable|date|after:' . now()->toDateTimeString(),
         ]);
 
-        if ($session->isExpired())
+        /** @var User $host */
+        $host = auth()->user();
+
+        $retrospective = $host->retrospective()->create([
+            'name' => $request->get('name'),
+            'scheduled_at' => $request->get('scheduled_at'),
+        ]);
+
+        if ($request->has('starts_at'))
         {
-            return response()->json([
-                'message' => 'Session expired',
-            ], 410);
+            $retrospective->update([
+                'starts_at' => $request->get('starts_at'),
+            ]);
         }
 
-        $this->player->retrospectives()->create([
-            'feedback' => $request->get('feedback')
-        ]);
-
         return response()->json([
-            'message' => 'Success!'
+            'message' => 'Success',
+            'retrospective' => $retrospective
         ], 201);
     }
 
     /**
-     * Update the contents of a retrospective
-     *
      * @param Request $request
-     * @param Session $session
+     * @param Retrospective $retrospective
+     *
+     * @return \Illuminate\Http\JsonResponse
+     * @internal param $invitationCode
+     *
+     */
+    public function join(Request $request, Retrospective $retrospective)
+    {
+        $user = auth()->user();
+
+        if (!$retrospective->is_public) {
+            return response()->json([
+                'message' => 'Retro is private!',
+                'retrospective' => $retrospective
+            ]);
+        }
+
+        $player = $retrospective->players()->create([
+            'user_id' => $user->id
+        ]);
+
+        return response()->json([
+            'message' => 'User is now ready to play!',
+            'player' => $player
+        ]);
+    }
+
+    /**
+     * @param Request $request
      * @param Retrospective $retrospective
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function update(Request $request, Session $session, Retrospective $retrospective)
+    public function start(Request $request, Retrospective $retrospective)
     {
-        $this->validatePlayer($session);
-
         $this->validate($request, [
-            'feedback' => 'required|string'
+            'timer' => 'nullable|integer|max:600'
         ]);
 
-        if ($session->isExpired())
-        {
-            return response()->json([
-                'message' => 'Session expired',
-            ], 410);
-        }
+        $retrospective->start($request->get('timer'));
 
-        $retrospective->update([
-            'feedback' => $request->get('feedback'),
+        return response()->json([
+            'message' => 'Retrospective started.'
         ]);
-
-        return response()->json([
-            'message' => 'Success!'
-        ], 201);
-    }
-
-    /**
-     * Toggle like on a retrospective
-     *
-     * @param Retrospective $retrospective
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function like(Retrospective $retrospective)
-    {
-        $this->validatePlayer($retrospective->player->session);
-
-        $added = $this->player->like($retrospective);
-
-        if ($added) {
-            return response()->json([
-                'message' => 'Liked!'
-            ], 201);
-        }
-
-        return response()->json([
-                'message' => 'Removed like.'
-            ], 200);
-    }
-
-    /**
-     * Toggle dislike on a retrospective
-     *
-     * @param Retrospective $retrospective
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function dislike(Retrospective $retrospective)
-    {
-        $this->validatePlayer($retrospective->player->session);
-
-        $added = $this->player->dislike($retrospective);
-
-        if ($added) {
-            return response()->json([
-                'message' => 'Disliked.'
-            ], 201);
-        }
-
-        return response()->json([
-                'message' => 'Removed dislike.'
-            ], 200);
-    }
-
-    /**
-     * Check if the player is a part of the session
-     *
-     * @param $session
-     */
-    private function validatePlayer($session)
-    {
-        $this->player = $session->players()->where('user_id', Auth::user()->id)->firstOrFail();
     }
 }

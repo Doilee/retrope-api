@@ -5,31 +5,34 @@ namespace App\Http\Controllers;
 use App\Invite;
 use App\Mail\PlayerInvited;
 use App\Player;
-use App\Session;
+use App\Retrospective;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Mail;
+use Illuminate\Support\Facades\Mail;
 
 class InvitationController extends Controller
 {
     /**
      * @param Request $request
-     * @param Session $session
+     * @param Retrospective $retrospective
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function invite(Request $request, Session $session)
+    public function invite(Request $request, Retrospective $retrospective)
     {
         $this->validate($request, [
             'email' => 'required|email',
         ]);
 
-        $user = $this->createGuestAccount($request->get('email'));
+        $user = User::where('email', '=', $request->get('email'))->first() ?? $this->createGuestAccount($request->get('email'));
+
+        $player = $retrospective->players()->where('user_id', $user->id)->first() ?? $retrospective->players()->create([
+            'user_id' => $user->id,
+        ]);
 
         /* @var Invite $invite */
-        $invite = $session->invites()->updateOrCreate([
-            'user_id' => $user->id,
+        $invite = $player->invites()->create([
             'token' => str_random(),
         ]);
 
@@ -46,6 +49,7 @@ class InvitationController extends Controller
      * @param $token
      *
      * @return \Illuminate\Http\JsonResponse
+     * @throws \Exception
      */
     public function accept($token)
     {
@@ -55,12 +59,7 @@ class InvitationController extends Controller
             abort(404);
         }
 
-        $user = $invite->user;
-
-        /* @var Player $player */
-        $player = $invite->session->players()->create([
-            'user_id' => $user->id
-        ]);
+        $user = $invite->player->user;
 
         $tokenResult = $user->createToken('Personal Access Token');
         $token = $tokenResult->token;
@@ -77,7 +76,7 @@ class InvitationController extends Controller
             'expires_at' => Carbon::parse(
                 $token->expires_at
             )->toDateTimeString(),
-            'player' => $player,
+            'player' => $invite->player,
         ]);
     }
 
@@ -89,7 +88,7 @@ class InvitationController extends Controller
         User::create([
             'email' => $email,
             'password' => bcrypt(uniqid('', true)),
-            'driver' => 'guest',
+            'driver' => User::GUEST_DRIVER,
             'email_verified_at' => now()->toDateTimeString(),
         ]);
     }
