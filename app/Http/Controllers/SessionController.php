@@ -33,12 +33,33 @@ class SessionController extends Controller
     {
         $this->middleware('throttle:180,1');
 
-        $votingStartsIn = $session->voting_starts_at ? $session->voting_starts_at->diffInSeconds(now()) : null;
-        $expires = $session->expires_at ? $session->expires_at->diffInSeconds(now()) : null;
+        $currentPhase = 'submitting';
+
+        if (!$session->voting_starts_at || $session->voting_starts_at && $session->voting_starts_at->isPast())
+        {
+            $currentPhase = 'voting';
+            $votingStartsIn = 0;
+        }
+        else
+        {
+            $votingStartsIn = $session->voting_starts_at->diffInSeconds(now());
+        }
+
+        if (!$session->expires_at || $session->expires_at && $session->expires_at->isPast())
+        {
+            $currentPhase = 'done';
+            $expiresIn = 0;
+        }
+        else
+        {
+            $expiresIn = $session->expires_at->diffInSeconds(now());
+        }
+
 
         return [
+            'current_phase' => $currentPhase,
             'voting_starts_in' => $votingStartsIn,
-            'expires_in' => $expires,
+            'expires_in' => $expiresIn,
         ];
     }
 
