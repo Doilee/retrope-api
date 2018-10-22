@@ -23,7 +23,6 @@ class UsersTableSeeder extends Seeder
         $admin = factory(User::class)->create([
             'name' => 'Administrator',
             'email' => 'admin@retrope.com',
-            'password' => bcrypt('test')
         ]);
         $admin->assignRole('admin');
         $admin->save();
@@ -33,7 +32,6 @@ class UsersTableSeeder extends Seeder
         $manager = factory(User::class)->create([
             'name' => 'Manager',
             'email' => 'manager@retrope.com',
-            'password' => bcrypt('test'),
             'client_id' => $client->id
         ]);
         $manager->assignRole('manager');
@@ -42,7 +40,6 @@ class UsersTableSeeder extends Seeder
         $employee = factory(User::class)->create([
             'name' => 'Employee',
             'email' => 'employee@retrope.com',
-            'password' => bcrypt('test'),
             'client_id' => $client->id
         ]);
         $employee->assignRole('employee');
