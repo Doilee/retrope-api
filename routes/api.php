@@ -26,8 +26,6 @@ Route::group([
     // Route::post('recover', 'AuthController@recover');
     // Route::get('user/verify/{verification_code}', 'AuthController@verifyUser');
 
-    Route::post('login/guest', 'AuthController@guestSignIn');
-
     Route::get('login/{driver}', 'Auth\OAuthController@redirectToProvider');
     Route::get('login/{driver}/callback', 'Auth\OAuthController@handleProviderCallback');
 
@@ -68,6 +66,16 @@ Route::group([
     Route::post('action/{action}/vote', 'ActionController@vote');
     Route::delete('vote/{vote}', 'ActionController@removeVote');
 
+    Route::group(['middleware' => 'role:admin'], function() {
+        Route::resource('client', 'Admin/ClientController', ['only' => [
+            'index', 'store', 'show', 'update', 'destroy'
+        ]]);
+    });
+    Route::group(['middleware' => 'role:manager'], function() {
+        Route::resource('user', 'Manager/UserController', ['only' => [
+            'index', 'store', 'show', 'update', 'destroy'
+        ]]);
+    });
 //    DEPRECATED:
 //    Route::put('action/{action}/like', 'ActionController@like');
 //    Route::put('action/{action}/dislike', 'ActionController@dislike');

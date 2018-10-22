@@ -41,15 +41,6 @@ class AuthController extends Controller
             'remember_me' => 'boolean'
         ]);
 
-        // If the class is using the ThrottlesLogins trait, we can automatically throttle
-        // the login attempts for this application. We'll key this by the username and
-        // the IP address of the client making these requests into this application.
-        if ($this->hasTooManyLoginAttempts($request)) {
-            event(new Lockout($request));
-
-            return $this->sendLockoutResponse($request);
-        }
-
         if ($this->attemptLogin($request)) {
             $this->clearLoginAttempts($request);
 
@@ -91,45 +82,6 @@ class AuthController extends Controller
     }
 
     /**
-     * Get the authenticated User
-     *
-     * @param Request $request
-     *
-     * @return \Illuminate\Http\JsonResponse [json] user object
-     */
-    public function guestSignIn(Request $request)
-    {
-        $this->validate($request, [
-            'name' => 'string|min:2|max:255',
-            'email' => 'required|email',
-        ]);
-
-        $user = new User([
-            'name' => $request->get('name'),
-            'email' => $request->get('email'),
-            'password' => bcrypt(uniqid()),
-            'driver' => User::GUEST_DRIVER,
-        ]);
-
-        $user->save();
-
-        $tokenResult = $user->createToken('Personal Access Token');
-        $token = $tokenResult->token;
-
-        $token->expires_at = Carbon::now()->addHours(12);
-
-        $token->save();
-
-        return response()->json([
-            'access_token' => $tokenResult->accessToken,
-            'token_type' => 'Bearer',
-            'expires_at' => Carbon::parse(
-                $tokenResult->token->expires_at
-            )->toDateTimeString()
-        ]);
-    }
-
-    /**
      * Get the login username to be used by the controller.
      *
      * @return string
@@ -137,24 +89,6 @@ class AuthController extends Controller
     public function username()
     {
         return 'email';
-    }
-
-    /**
-     * Redirect the user after determining they are locked out.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return void
-     * @throws \Illuminate\Validation\ValidationException
-     */
-    protected function sendLockoutResponse(Request $request)
-    {
-        $seconds = $this->limiter()->availableIn(
-            $this->throttleKey($request)
-        );
-
-        throw ValidationException::withMessages([
-            $this->username() => [Lang::get('auth.throttle', ['seconds' => $seconds])],
-        ])->status(429);
     }
 
         /**
