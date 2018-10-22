@@ -44,7 +44,7 @@ class AuthController extends Controller
         if ($this->attemptLogin($request)) {
             $this->clearLoginAttempts($request);
 
-            $user = $request->user();
+            $user = $this->guard()->user();
             $tokenResult = $user->createToken('Personal Access Token');
             $token = $tokenResult->token;
 
@@ -145,5 +145,15 @@ class AuthController extends Controller
         return response()->json([
             'message' => 'Successfully created user!'
         ], 201);
+    }
+
+    /**
+     * Use the webguard for a working authentication.
+     *
+     * @return \Illuminate\Contracts\Auth\StatefulGuard
+     */
+    protected function guard()
+    {
+        return Auth::guard('web');
     }
 }
