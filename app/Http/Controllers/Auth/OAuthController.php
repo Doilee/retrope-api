@@ -25,12 +25,13 @@ class OAuthController extends Controller
      */
     public function handleProviderCallback($driver)
     {
-        $user = Socialite::driver($driver)->stateless()->user();
+        /* @var \Laravel\Socialite\One\User $user */
+        $socialite = Socialite::driver($driver)->stateless()->user();
 
         $user = User::createOrUpdate([
-            'name' => $user->getNickname(),
+            'name' => $socialite->getNickname(),
         ],[
-            'email' => $user->getEmail(),
+            'email' => $socialite->getEmail(),
             'driver' => $driver
         ]);
 
