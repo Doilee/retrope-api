@@ -11,7 +11,8 @@ Runs all the migrations
 ```
 php artisan migrate
 ```
-Creates 3 verified accounts. <br>
+Creates 3 verified accounts.
+
 - 1 Admin user (Can CRUD clients, managers, teams & users)
   - admin@retrope.com
   - secret
