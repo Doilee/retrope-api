@@ -1,7 +1,9 @@
 <?php
 
+use App\Client;
 use App\User;
 use Illuminate\Database\Seeder;
+use Spatie\Permission\Models\Role;
 
 class UsersTableSeeder extends Seeder
 {
@@ -12,11 +14,38 @@ class UsersTableSeeder extends Seeder
      */
     public function run()
     {
+        Role::create(['name' => 'admin']);
+        Role::create(['name' => 'manager']);
+        Role::create(['name' => 'employee']);
+        Role::create(['name' => 'guest']);
+
         // Matthijs
-        factory(User::class)->create([
-            'name' => 'Doilee',
-            'email' => 'matthijs0894@hotmail.com',
-            'password' => bcrypt('jackass')
+        $admin = factory(User::class)->create([
+            'name' => 'Administrator',
+            'email' => 'admin@retrope.com',
+            'password' => bcrypt('test')
         ]);
+        $admin->assignRole('admin');
+        $admin->save();
+
+        $client = factory(Client::class)->create();
+
+        $manager = factory(User::class)->create([
+            'name' => 'Manager',
+            'email' => 'manager@retrope.com',
+            'password' => bcrypt('test'),
+            'client_id' => $client->id
+        ]);
+        $manager->assignRole('manager');
+        $manager->save();
+
+        $employee = factory(User::class)->create([
+            'name' => 'Employee',
+            'email' => 'employee@retrope.com',
+            'password' => bcrypt('test'),
+            'client_id' => $client->id
+        ]);
+        $employee->assignRole('employee');
+        $employee->save();
     }
 }

@@ -17,6 +17,7 @@ $factory->define(App\User::class, function (Faker $faker) {
     return [
         'name' => $faker->name,
         'email' => $faker->unique()->safeEmail,
-        'password' => password_hash('secret', PASSWORD_DEFAULT)
+        'password' => password_hash('secret', PASSWORD_DEFAULT),
+        'email_verified_at' => now()->subDay(),
     ];
 });
