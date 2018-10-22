@@ -7,6 +7,7 @@ use App\Mail\PlayerInvited;
 use App\Player;
 use App\Retrospective;
 use App\User;
+use Auth;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
@@ -25,7 +26,11 @@ class InvitationController extends Controller
             'email' => 'required|email',
         ]);
 
-        $user = User::where('email', '=', $request->get('email'))->first() ?? $this->createGuestAccount($request->get('email'));
+        $manager = Auth::user();
+
+        $users = $manager->client->users;
+
+        $user = $users->where('email', '=', $request->get('email'))->firstOrFail();
 
         $player = $retrospective->players()->where('user_id', $user->id)->first() ?? $retrospective->players()->create([
             'user_id' => $user->id,
@@ -36,8 +41,7 @@ class InvitationController extends Controller
             'token' => str_random(),
         ]);
 
-        Mail::to($user)
-            ->send(new PlayerInvited($invite));
+        Mail::to($user)->send(new PlayerInvited($invite));
         // mail to email
 
         return response()->json([
@@ -59,17 +63,6 @@ class InvitationController extends Controller
             abort(404);
         }
 
-        $user = $invite->player->user;
-
-        $tokenResult = $user->createToken('Personal Access Token');
-        $token = $tokenResult->token;
-
-        $token->expires_at = Carbon::now()->addDays(7);
-
-        $token->save();
-
-        $invite->delete();
-
         return response()->json([
             'access_token' => $tokenResult->accessToken,
             'token_type' => 'Bearer',
@@ -77,19 +70,6 @@ class InvitationController extends Controller
                 $token->expires_at
             )->toDateTimeString(),
             'player' => $invite->player,
-        ]);
-    }
-
-    /**
-     * @param string $email
-     */
-    private function createGuestAccount(string $email)
-    {
-        User::create([
-            'email' => $email,
-            'password' => bcrypt(uniqid('', true)),
-            'driver' => User::GUEST_DRIVER,
-            'email_verified_at' => now()->toDateTimeString(),
         ]);
     }
 }
