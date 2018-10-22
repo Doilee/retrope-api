@@ -5,11 +5,31 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 
 /**
+ * App\Player
  *
  * @property Retrospective $retrospective
  * @property User user
  * Class Player
  * @package App
+ * @property int $id
+ * @property int $user_id
+ * @property int $session_id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property string|null $deleted_at
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Action[] $actions
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Invite[] $invites
+ * @property-read \App\User $user
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Vote[] $votes
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Player whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Player whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Player whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Player whereSessionId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Player whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Player whereUserId($value)
+ * @mixin \Eloquent
+ * @property int $retrospective_id
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Player whereRetrospectiveId($value)
  */
 class Player extends Model
 {

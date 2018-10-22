@@ -5,6 +5,7 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 
 /**
+ * App\Retrospective
  *
  * @property int $id
  * @property \Carbon\Carbon|null $voting_starts_at
@@ -13,6 +14,32 @@ use Illuminate\Database\Eloquent\Model;
  * @property \Carbon\Carbon|null $starts_at
  * Class Session
  * @package App
+ * @property int $player_id
+ * @property string $feedback
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property string|null $deleted_at
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Action[] $actions
+ * @property-read \App\User $host
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Player[] $players
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Retrospective whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Retrospective whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Retrospective whereFeedback($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Retrospective whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Retrospective wherePlayerId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Retrospective whereUpdatedAt($value)
+ * @mixin \Eloquent
+ * @property int $host_id
+ * @property string $name
+ * @property int $is_public
+ * @property \Illuminate\Support\Carbon|null $scheduled_at
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Retrospective whereExpiresAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Retrospective whereHostId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Retrospective whereIsPublic($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Retrospective whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Retrospective whereScheduledAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Retrospective whereStartsAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Retrospective whereVotingStartsAt($value)
  */
 class Retrospective extends Model
 {
