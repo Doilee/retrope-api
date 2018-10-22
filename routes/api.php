@@ -67,12 +67,12 @@ Route::group([
     Route::delete('vote/{vote}', 'ActionController@removeVote');
 
     Route::group(['middleware' => 'role:admin'], function() {
-        Route::resource('client', 'Admin/ClientController', ['only' => [
+        Route::resource('client', 'Admin\ClientController', ['only' => [
             'index', 'store', 'show', 'update', 'destroy'
         ]]);
     });
     Route::group(['middleware' => 'role:manager'], function() {
-        Route::resource('user', 'Manager/UserController', ['only' => [
+        Route::resource('user', 'Manager\UserController', ['only' => [
             'index', 'store', 'show', 'update', 'destroy'
         ]]);
     });
