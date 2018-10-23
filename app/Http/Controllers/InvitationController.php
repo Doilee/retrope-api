@@ -12,6 +12,7 @@ use Auth;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class InvitationController extends Controller
 {
@@ -28,7 +29,10 @@ class InvitationController extends Controller
         $users = $manager->client->users;
 
         // Throw exception when user isn't part of the client
-        $user = $users->where('id', $user->id)->firstOrFail();
+
+        if (!$users->where('id', $user->id)->first()) {
+            throw new BadRequestHttpException('User doesn\'t exist');
+        }
 
         // Create player field if doesnt exist
         $player = $retrospective->players()->where('user_id', $user->id)->first() ?? $retrospective->players()->create([
@@ -69,6 +73,10 @@ class InvitationController extends Controller
         $user = Auth::user();
 
         $player = $user->players()->where('retrospective_id', $retrospective->id)->first();
+
+        if (!$player->invites()->first()) {
+            throw new RetrospectiveException("You have not been invited to join this retrospective.");
+        }
 
         $player->joined_at = now();
 
