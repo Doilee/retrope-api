@@ -54,6 +54,8 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
+        $this->validateUser($user);
+
         return $user;
     }
 
@@ -66,6 +68,8 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
+        $this->validateUser($user);
+
         $this->validate($request, [
             'name' => 'required|string|min:2|max:255',
             'email' => 'required|string|email|max:255|unique:users',
@@ -91,10 +95,18 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
+        $this->validateUser($user);
+
         $user->delete();
 
         return response()->json([
             'message' => 'User successfully deleted',
         ]);
+    }
+
+    private function validateUser(User $user)
+    {
+        // Check to see if User exists within the client
+        $this->manager->client->users()->where('id', $user->id)->firstOrFail();
     }
 }
