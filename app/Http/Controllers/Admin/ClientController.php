@@ -50,6 +50,8 @@ class ClientController extends Controller
      */
     public function show(Client $client)
     {
+        $client->load('users');
+
         return $client;
     }
 

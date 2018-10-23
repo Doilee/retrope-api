@@ -11,7 +11,7 @@
 |
 */
 
-Route::get('/', function () use ($router) {
+Route::get('/', function (){
     return App::version();
 });
 
@@ -19,48 +19,25 @@ Route::get('/', function () use ($router) {
 Route::group([
     'prefix' => 'auth'
 ], function () {
-
     Route::post('login', 'AuthController@login');
     Route::post('register', 'AuthController@register');
     Route::post('password/reset', 'Auth\ForgotPasswordController@sendResetLinkEmail');
-    // Route::post('recover', 'AuthController@recover');
-    // Route::get('user/verify/{verification_code}', 'AuthController@verifyUser');
 
     Route::get('login/{driver}', 'Auth\OAuthController@redirectToProvider');
     Route::get('login/{driver}/callback', 'Auth\OAuthController@handleProviderCallback');
-
-    Route::group([
-      'middleware' => 'auth:api'
-    ], function() {
-        Route::get('logout', 'AuthController@logout');
-    });
-
 });
 
 Route::group([
   'middleware' => 'auth:api'
 ], function() {
+    Route::get('logout', 'AuthController@logout');
+
     Route::get('me', 'ProfileController@me');
     Route::post('profile/edit', 'ProfileController@edit');
 
     Route::put('email/verify/{user}', 'Auth\VerificationController@verify')->middleware('signed')->name('verification.verify');
     Route::post('email/resend', 'Auth\VerificationController@resend');
 
-    // SESSIONS
-    Route::post('retrospective/create', 'RetrospectiveController@create');
-    Route::get('retrospective/{retrospective}', 'RetrospectiveController@show');
-    Route::get('retrospective/{retrospective}/timer', 'RetrospectiveController@timeLeft');
-
-    Route::put('retrospective/{retrospective}/join', 'RetrospectiveController@join');
-    Route::put('retrospective/{retrospective}/start', 'RetrospectiveController@start');
-
-    // actions
-    Route::post('retrospective/{retrospective}/action/create', 'ActionController@create');
-    Route::get('action/{action}', 'ActionController@show');
-    Route::put('action/{action}', 'ActionController@update');
-
-    Route::post('action/{action}/vote', 'ActionController@vote');
-    Route::delete('vote/{vote}', 'ActionController@removeVote');
 
     Route::group(['middleware' => 'role:admin'], function() {
         Route::resource('client', 'Admin\ClientController', ['only' => [
@@ -72,14 +49,33 @@ Route::group([
             'index', 'store', 'show', 'update', 'destroy'
         ]]);
 
-        Route::post('retrospective/{retrospective}/invite/{user}', 'InvitationController@invite');
+        Route::post('retrospective/create', 'Manager\RetrospectiveController@create');
+        Route::get('retrospective/{retrospective}', 'Manager\RetrospectiveController@show');
+        Route::put('retrospective/{retrospective}/start', 'Manager\RetrospectiveController@start');
+
+        Route::post('retrospective/{retrospective}/invite/{user}', 'Manager\InvitationController@invite');
 
         Route::post('user/{user}/sendverification', 'Manager\UserController@sendVerificationToUser');
     });
 
     Route::group(['middleware' => 'role:employee'], function() {
-        Route::post('retrospective/{retrospective}/join', 'InvitationController@accept');
+
+        Route::get('retrospective/{retrospective}/timer', 'Employee\RetrospectiveController@timeLeft');
+
+        // Test join todo: Comment when going live
+        Route::put('retrospective/{retrospective}/join', 'Employee\RetrospectiveController@join');
+        // Real join todo: Uncomment when going live
+        // Route::put('retrospective/{retrospective}/join', 'InvitationController@acceptInvite');
+
+        // actions
+        Route::post('retrospective/{retrospective}/action/create', 'Employee\ActionController@create');
+        Route::get('action/{action}', 'Employee\ActionController@show');
+        Route::put('action/{action}', 'Employee\ActionController@update');
+
+        Route::post('action/{action}/vote', 'Employee\ActionController@vote');
+        Route::delete('vote/{vote}', 'Employee\ActionController@removeVote');
     });
+
 //    DEPRECATED:
 //    Route::put('action/{action}/like', 'ActionController@like');
 //    Route::put('action/{action}/dislike', 'ActionController@dislike');

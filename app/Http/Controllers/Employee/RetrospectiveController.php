@@ -1,7 +1,10 @@
-<?php namespace App\Http\Controllers;
+<?php namespace App\Http\Controllers\Employee;
 
+use App\Exceptions\RetrospectiveException;
+use App\Http\Controllers\Controller;
 use App\Retrospective;
 use App\User;
+use Auth;
 use Illuminate\Http\Request;
 use Mail;
 
@@ -11,18 +14,6 @@ use Mail;
  */
 class RetrospectiveController extends Controller
 {
-    /**
-     * @param Retrospective $retrospective
-     *
-     * @return Retrospective
-     */
-    public function show(Retrospective $retrospective)
-    {
-        $retrospective->load('actions');
-        return $retrospective;
-    }
-
-
     /**
      * @param Retrospective $retrospective
      *
@@ -63,50 +54,15 @@ class RetrospectiveController extends Controller
     }
 
     /**
-     * @param Request $request
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function create(Request $request)
-    {
-        $this->validate($request, [
-            'name' => 'required|string|min:2',
-            'scheduled_at' => 'nullable|date|after:' . now()->toDateTimeString(),
-            'starts_at' => 'nullable|date|after:' . now()->toDateTimeString(),
-        ]);
-
-        /** @var User $host */
-        $host = auth()->user();
-
-        $retrospective = $host->retrospective()->create([
-            'name' => $request->get('name'),
-            'scheduled_at' => $request->get('scheduled_at'),
-        ]);
-
-        if ($request->has('starts_at'))
-        {
-            $retrospective->update([
-                'starts_at' => $request->get('starts_at'),
-            ]);
-        }
-
-        return response()->json([
-            'message' => 'Success',
-            'retrospective' => $retrospective
-        ], 201);
-    }
-
-    /**
      * This endpoint will not be used in production, is only used for testing!
      *
-     * @param Request $request
      * @param Retrospective $retrospective
      *
      * @return \Illuminate\Http\JsonResponse
      * @internal param $invitationCode
      *
      */
-    public function join(Request $request, Retrospective $retrospective)
+    public function join(Retrospective $retrospective)
     {
         $user = auth()->user();
 
@@ -127,22 +83,42 @@ class RetrospectiveController extends Controller
         ]);
     }
 
+
+
     /**
-     * @param Request $request
-     * @param Retrospective $retrospective
+     * Replaces join() when going live
      *
      * @return \Illuminate\Http\JsonResponse
+     * @throws \Exception
      */
-    public function start(Request $request, Retrospective $retrospective)
+    public function acceptInvite(Retrospective $retrospective)
     {
-        $this->validate($request, [
-            'timer' => 'nullable|integer|max:600'
-        ]);
+        // Old code
+        // /* @var Invite $invite */
+        // if (!$invite = Invite::where('token', $token)->first()) {
+        //     //if the invite doesn't exist do something more graceful than this
+        //     abort(404);
+        // }
 
-        $retrospective->start($request->get('timer'));
+        if ($retrospective->starts_at->isPast()) {
+            throw new RetrospectiveException("The retrospective session has already been started.");
+        }
+
+        $user = Auth::user();
+
+        $player = $user->players()->where('retrospective_id', $retrospective->id)->first();
+
+        if (!$player->invites()->first()) {
+            throw new RetrospectiveException("You have not been invited to join this retrospective.");
+        }
+
+        $player->joined_at = now();
+
+        $player->save();
 
         return response()->json([
-            'message' => 'Retrospective started.'
+            'message' => 'Player joined the game!',
+            'player' => $player,
         ]);
     }
 }
