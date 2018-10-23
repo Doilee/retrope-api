@@ -11,8 +11,18 @@ Runs all the migrations
 ```
 php artisan migrate
 ```
-Creates 3 verified accounts.
 
+Sets up the passport files and database fields (needed for authentication)
+~~~~
+php artisan passport:install 
+~~~~
+
+Seed **after** installing passport for correctly stored passwords
+```$xslt
+php artisan db:seed
+```
+
+This creates 3 verified accounts.
 - 1 Admin user (Can CRUD clients, managers, teams & users)
   - admin@retrope.com
   - secret
@@ -24,15 +34,10 @@ Creates 3 verified accounts.
 - 1 Employee user (Can CRUD actions, feedback & votes)
   - employee@retrope.com
   - secret
-
-Sets up the passport files and database fields (needed for authentication)
-~~~~
-php artisan passport:install 
-~~~~
-
-Seed **after** installing passport for correctly stored passwords
+  
+Run migrations for the test database (make sure to create database named retrope_test first)
 ```$xslt
-php artisan seed
+php artisan migrate --database=mysql_testing
 ```
 
 Check to see if the tests are A OK!
