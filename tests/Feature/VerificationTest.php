@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\User;
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Notification;
 use Tests\PassportTestCase;
@@ -16,11 +17,33 @@ class VerificationTest extends PassportTestCase
         // $this->put('/auth/email/verify/' . $this->user->id)->dump();
     }
 
-    public function testResend()
+    public function testAlreadyVerified()
     {
         Notification::fake();
 
-        $this->post('/email/resend')->assertSuccessful();
+        $request = $this->post('/email/resend');
+
+        $request->assertStatus(422);
+
+        $request->json([
+            'message' => 'User already verified.',
+            'verified' => true,
+        ]);
+
+        Notification::assertNothingSent();
+    }
+
+    public function testVerification()
+    {
+        Notification::fake();
+
+        $this->user->email_verified_at = null;
+
+        $this->user->save();
+
+        $request = $this->post('/email/resend');
+
+        $request->assertSuccessful();
 
         Notification::assertSentTo($this->user,VerifyEmail::class);
     }

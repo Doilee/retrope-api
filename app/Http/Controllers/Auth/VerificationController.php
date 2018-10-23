@@ -62,7 +62,8 @@ class VerificationController extends Controller
         $request->user()->sendEmailVerificationNotification();
 
         return response()->json([
-            'message' => 'Resent email verification.'
+            'message' => 'Resent email verification.',
+            'verified' => false,
         ]);
     }
 }

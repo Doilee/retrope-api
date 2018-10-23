@@ -11,6 +11,8 @@ class PassportTestCase extends TestCase
     use DatabaseTransactions;
     protected $headers = [];
     protected $scopes = [];
+
+    /* @var User $user */
     protected $user;
     public function setUp()
     {
