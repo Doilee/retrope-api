@@ -4,10 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Client;
 use App\Http\Controllers\Controller;
-use App\User;
-use Auth;
 use Illuminate\Http\Request;
-use Spatie\Permission\Middlewares\RoleMiddleware;
 
 class ClientController extends Controller
 {
@@ -29,12 +26,14 @@ class ClientController extends Controller
     {
         $this->validate($request, [
             'name' => 'required|string|min:2|max:255|unique:clients',
-            'subscription_expires_at' => 'required|datetime'
+            'subscription_expires_at' => 'required|date'
         ]);
 
         $data = $request->only(['name', 'subscription_expires_at']);
 
         $client = new Client($data);
+
+        $client->save();
 
         return response()->json([
             'message' => 'Successfully made client',
@@ -65,7 +64,7 @@ class ClientController extends Controller
     {
         $this->validate($request, [
             'name' => 'required|string|min:2|max:255',
-            'subscription_expires_at' => 'required|datetime'
+            'subscription_expires_at' => 'required|date'
         ]);
 
         $data = $request->only(['name', 'subscription_expires_at']);
