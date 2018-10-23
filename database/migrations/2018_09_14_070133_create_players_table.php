@@ -16,6 +16,7 @@ class CreatePlayersTable extends Migration
             $table->increments('id');
             $table->integer('user_id')->unsigned();
             $table->integer('retrospective_id')->unsigned();
+            $table->dateTime('joined_at')->nullable();
             $table->timestamps();
             $table->softDeletes();
             

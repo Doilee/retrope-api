@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\RetrospectiveException;
 use App\Invite;
 use App\Mail\PlayerInvited;
 use App\Player;
@@ -20,18 +21,16 @@ class InvitationController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function invite(Request $request, Retrospective $retrospective)
+    public function invite(Request $request, Retrospective $retrospective, User $user)
     {
-        $this->validate($request, [
-            'email' => 'required|email',
-        ]);
-
         $manager = Auth::user();
 
         $users = $manager->client->users;
 
-        $user = $users->where('email', '=', $request->get('email'))->firstOrFail();
+        // Throw exception when user isn't part of the client
+        $user = $users->where('id', $user->id)->firstOrFail();
 
+        // Create player field if doesnt exist
         $player = $retrospective->players()->where('user_id', $user->id)->first() ?? $retrospective->players()->create([
             'user_id' => $user->id,
         ]);
@@ -50,26 +49,34 @@ class InvitationController extends Controller
     }
 
     /**
-     * @param $token
      *
      * @return \Illuminate\Http\JsonResponse
      * @throws \Exception
      */
-    public function accept($token)
+    public function accept(Retrospective $retrospective)
     {
-        /* @var Invite $invite */
-        if (!$invite = Invite::where('token', $token)->first()) {
-            //if the invite doesn't exist do something more graceful than this
-            abort(404);
+        // Old code
+        // /* @var Invite $invite */
+        // if (!$invite = Invite::where('token', $token)->first()) {
+        //     //if the invite doesn't exist do something more graceful than this
+        //     abort(404);
+        // }
+
+        if ($retrospective->starts_at->isPast()) {
+            throw new RetrospectiveException("The retrospective session has already been started.");
         }
 
+        $user = Auth::user();
+
+        $player = $user->players()->where('retrospective_id', $retrospective->id)->first();
+
+        $player->joined_at = now();
+
+        $player->save();
+
         return response()->json([
-            'access_token' => $tokenResult->accessToken,
-            'token_type' => 'Bearer',
-            'expires_at' => Carbon::parse(
-                $token->expires_at
-            )->toDateTimeString(),
-            'player' => $invite->player,
+            'message' => 'Player joined the game!',
+            'player' => $player,
         ]);
     }
 }

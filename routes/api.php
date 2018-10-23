@@ -54,10 +54,6 @@ Route::group([
     Route::put('retrospective/{retrospective}/join', 'RetrospectiveController@join');
     Route::put('retrospective/{retrospective}/start', 'RetrospectiveController@start');
 
-    Route::post('retrospective/{retrospective}/invite', 'InvitationController@invite');
-    Route::post('invite/{token}/accept', 'InvitationController@accept');
-    // Route::put('retrospective/{retrospective}/invitation/create', 'InvitationController@create');
-
     // actions
     Route::post('retrospective/{retrospective}/action/create', 'ActionController@create');
     Route::get('action/{action}', 'ActionController@show');
@@ -75,6 +71,12 @@ Route::group([
         Route::resource('user', 'Manager\UserController', ['only' => [
             'index', 'store', 'show', 'update', 'destroy'
         ]]);
+
+        Route::post('retrospective/{retrospective}/invite/{user}', 'InvitationController@invite');
+    });
+
+    Route::group(['middleware' => 'role:employee'], function() {
+        Route::post('retrospective/{retrospective}/join', 'InvitationController@accept');
     });
 //    DEPRECATED:
 //    Route::put('action/{action}/like', 'ActionController@like');
