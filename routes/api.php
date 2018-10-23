@@ -21,7 +21,10 @@ Route::group([
 ], function () {
     Route::post('login', 'AuthController@login');
     Route::post('register', 'AuthController@register');
-    Route::post('password/reset', 'Auth\ForgotPasswordController@sendResetLinkEmail');
+
+    Route::post('password/create', 'Auth\PasswordResetController@create');
+    Route::get('password/find/{token}', 'Auth\PasswordResetController@find');
+    Route::post('password/reset', 'Auth\PasswordResetController@reset');
 
     Route::get('login/{driver}', 'Auth\OAuthController@redirectToProvider');
     Route::get('login/{driver}/callback', 'Auth\OAuthController@handleProviderCallback');
