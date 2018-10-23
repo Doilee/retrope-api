@@ -73,6 +73,8 @@ Route::group([
         ]]);
 
         Route::post('retrospective/{retrospective}/invite/{user}', 'InvitationController@invite');
+
+        Route::post('user/{user}/sendverification', 'Manager\UserController@sendVerificationToUser');
     });
 
     Route::group(['middleware' => 'role:employee'], function() {

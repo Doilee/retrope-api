@@ -45,6 +45,25 @@ class UserController extends Controller
         ], 201);
     }
 
+    public function sendVerificationToUser(User $user)
+    {
+        $this->validateUser($user);
+
+        if ($user->hasVerifiedEmail()) {
+            return response()->json([
+                'message' => 'User already verified.',
+                'verified' => true,
+            ], 422);
+        }
+
+        $user->sendEmailVerificationNotification();
+
+        return response()->json([
+            'message' => 'Verification E-mail has been sent!',
+            'user' => $user,
+        ]);
+    }
+
     /**
      * Display the specified user.
      *
