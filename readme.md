@@ -42,5 +42,5 @@ php artisan migrate --database=mysql_testing
 
 Check to see if the tests are A OK!
 ```$xslt
-phpunit tests
+./vendor/bin/phpunit
 ```
