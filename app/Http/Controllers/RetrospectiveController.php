@@ -97,6 +97,8 @@ class RetrospectiveController extends Controller
     }
 
     /**
+     * This endpoint will not be used in production, is only used for testing!
+     *
      * @param Request $request
      * @param Retrospective $retrospective
      *
