@@ -9,4 +9,6 @@ class PasswordReset extends Model
     protected $fillable = [
         'email', 'token'
     ];
+
+    const UPDATED_AT = null;
 }
