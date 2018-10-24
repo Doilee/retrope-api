@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Client;
 use App\Http\Controllers\Controller;
+use App\Subscription;
 use Illuminate\Http\Request;
 
 class ClientController extends Controller
@@ -24,12 +25,9 @@ class ClientController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate($request, [
-            'name' => 'required|string|min:2|max:255|unique:clients',
-            'subscription_expires_at' => 'required|date'
-        ]);
+        $this->validate($request, $this->validationRules());
 
-        $data = $request->only(['name', 'subscription_expires_at']);
+        $data = $request->only(array_keys($this->validationRules()));
 
         $client = new Client($data);
 
@@ -89,5 +87,12 @@ class ClientController extends Controller
         return response()->json([
             'message' => 'Successfully deleted client'
         ]);
+    }
+
+    private function validationRules()
+    {
+        return [
+            'type' => 'required|string|in:' . implode(',', Subscription::TYPES),
+        ];
     }
 }
