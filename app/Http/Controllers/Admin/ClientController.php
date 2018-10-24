@@ -50,7 +50,7 @@ class ClientController extends Controller
      */
     public function show(Client $client)
     {
-        $client->load('users');
+        $client->load('users', 'subscriptions');
 
         return $client;
     }
@@ -64,16 +64,11 @@ class ClientController extends Controller
      */
     public function update(Request $request, Client $client)
     {
-        $this->validate($request, [
-            'name' => 'required|string|min:2|max:255',
-            'subscription_expires_at' => 'required|date'
-        ]);
+        $this->validate($request, $this->validationRules());
 
-        $data = $request->only(['name', 'subscription_expires_at']);
+        $data = $request->only(array_keys($this->validationRules()));
 
-        $client->fill($data);
-
-        $client->save();
+        $client->update($data);
 
         return response()->json([
             'message' => 'Edit successful!',

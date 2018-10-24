@@ -10,7 +10,7 @@ class Subscription extends Model
     use IsInvoicableTrait;
 
     protected $fillable = [
-        'types',
+        'type',
         'expires_at',
     ];
 

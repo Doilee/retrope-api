@@ -46,6 +46,12 @@ Route::group([
         Route::resource('client', 'Admin\ClientController', ['only' => [
             'index', 'store', 'show', 'update', 'destroy'
         ]]);
+
+        Route::post('client/{client}/subscription', 'Admin\SubscriptionController@create');
+
+        Route::resource('subscription', 'Admin\SubscriptionController', ['only' => [
+            'update', 'destroy'
+        ]]);
     });
     Route::group(['middleware' => 'role:manager'], function() {
         Route::resource('user', 'Manager\UserController', ['only' => [
