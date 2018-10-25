@@ -148,7 +148,6 @@ return [
         Illuminate\View\ViewServiceProvider::class,
         Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
         Spatie\Permission\PermissionServiceProvider::class,
-        SanderVanHooft\Invoicable\InvoicableServiceProvider::class,
 
         /*
          * Package Service Providers...

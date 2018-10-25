@@ -25,8 +25,6 @@ use SanderVanHooft\Invoicable\IsInvoicable\IsInvoicableTrait;
  */
 class Subscription extends Model
 {
-    use IsInvoicableTrait;
-
     protected $fillable = [
         'type',
         'expires_at',
