@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Client whereSubscriptionExpiresAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Client whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Subscription[] $subscriptions
  */
 class Client extends Model
 {

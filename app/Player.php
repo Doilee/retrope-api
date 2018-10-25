@@ -30,6 +30,8 @@ use Illuminate\Database\Eloquent\Model;
  * @mixin \Eloquent
  * @property int $retrospective_id
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Player whereRetrospectiveId($value)
+ * @property string|null $joined_at
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Player whereJoinedAt($value)
  */
 class Player extends Model
 {
