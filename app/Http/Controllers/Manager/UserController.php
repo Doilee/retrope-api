@@ -1,25 +1,21 @@
 <?php namespace App\Http\Controllers\Manager;
 
+use App\Client;
 use App\Http\Controllers\Controller;
 use App\User;
 use Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Input;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class UserController extends Controller
 {
-    protected $manager;
-
-    public function __construct()
-    {
-        $this->manager = Auth::user();
-    }
-
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return $this->manager->client->users()->paginate(25);
+        return $this->client()->users()->paginate(25);
     }
 
     /**
@@ -30,14 +26,13 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate($request, [
-            'name' => 'required|string|min:2|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-        ]);
+        $this->validate($request, $this->validationRules());
 
-        $fill = array_merge(['password' => bcrypt(uniqid())],$request->all());
+        $fill = array_merge([
+            'password' => bcrypt(uniqid())
+        ], $request->all());
 
-        $user = $this->manager->client->users()->create($fill);
+        $user = $this->client()->users()->create($fill);
 
         return response()->json([
             'message' => 'Successfully stored user',
@@ -89,16 +84,11 @@ class UserController extends Controller
     {
         $this->validateUser($user);
 
-        $this->validate($request, [
-            'name' => 'required|string|min:2|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-        ]);
+        $this->validate($request, $this->validationRules());
 
-        $data = $request->only(['name', 'email']);
+        $data = $request->only(array_keys($this->validationRules()));
 
-        $user->fill($data);
-
-        $user->save();
+        $user->update($data);
 
         return response()->json([
             'message' => 'Edit successful!',
@@ -125,7 +115,36 @@ class UserController extends Controller
 
     private function validateUser(User $user)
     {
-        // Check to see if User exists within the client
-        $this->manager->client->users()->where('id', $user->id)->firstOrFail();
+        if (Auth::user()->hasRole('manager')) {
+            // Check to see if User exists within the client
+            $this->client()->users()->where('id', $user->id)->firstOrFail();
+        }
+    }
+
+    private function validationRules()
+    {
+        return [
+            'name' => 'required|string|min:2|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+        ];
+    }
+
+    private function client()
+    {
+        $user = Auth::user();
+
+        if ($user->hasRole('manager')) {
+            return Auth::user()->client;
+        }
+
+        if ($user->hasRole('admin')) {
+            if (!Input::get('client_id')) {
+                throw new BadRequestHttpException('Please provide a client_id in your request.');
+            }
+
+            return Client::find(Input::get('client_id'));
+        }
+
+        throw new \Exception("Permission issue, please contact matthijs@retrope.com");
     }
 }

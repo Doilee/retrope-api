@@ -29,14 +29,13 @@ Route::group([
 Route::group([
   'middleware' => 'auth:api'
 ], function() {
-    Route::get('logout', 'AuthController@logout');
+    Route::get('auth/logout', 'AuthController@logout');
 
     Route::get('me', 'ProfileController@me');
     Route::post('profile/edit', 'ProfileController@edit');
 
     Route::put('email/verify/{user}', 'Auth\VerificationController@verify')->middleware('signed')->name('verification.verify');
     Route::post('email/resend', 'Auth\VerificationController@resend');
-
 
     Route::group(['middleware' => 'role:admin'], function() {
         Route::resource('client', 'Admin\ClientController', ['only' => [
@@ -49,18 +48,19 @@ Route::group([
             'update', 'destroy'
         ]]);
     });
-    Route::group(['middleware' => 'role:manager'], function() {
+
+    Route::group(['middleware' => 'role:admin|manager'], function() {
         Route::resource('user', 'Manager\UserController', ['only' => [
             'index', 'store', 'show', 'update', 'destroy'
         ]]);
+
+        Route::post('user/{user}/sendverification', 'Manager\UserController@sendVerificationToUser');
 
         Route::post('retrospective/create', 'Manager\RetrospectiveController@create');
         Route::get('retrospective/{retrospective}', 'Manager\RetrospectiveController@show');
         Route::put('retrospective/{retrospective}/start', 'Manager\RetrospectiveController@start');
 
         Route::post('retrospective/{retrospective}/invite/{user}', 'Manager\InvitationController@invite');
-
-        Route::post('user/{user}/sendverification', 'Manager\UserController@sendVerificationToUser');
     });
 
     Route::group(['middleware' => 'role:employee'], function() {
