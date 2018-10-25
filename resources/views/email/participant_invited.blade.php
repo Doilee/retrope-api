@@ -6,10 +6,10 @@
 <body>
 
 <div>
-    You've been invited to a retrospective of RETROPE.
+    You've been invited to a retrospective session of RETROPE.
     <br>
 
-    Click <a href="{{ env('FRONT_END_URL') }}">here</a> to join!
+    Click <a href="{{ config('frontend.url') }}">here</a> to join!
 </div>
 
 </body>
