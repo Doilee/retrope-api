@@ -86,7 +86,7 @@ class SubscriptionController extends Controller
 
     private function notifyManagers(Client $client, Notification $notification)
     {
-        $client->users()->role('managers')->each(function(User $user) use ($notification) {
+        $client->users()->role('manager')->each(function(User $user) use ($notification) {
             $user->notify($notification);
         });
     }

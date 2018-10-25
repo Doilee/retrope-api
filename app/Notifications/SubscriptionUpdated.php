@@ -46,7 +46,7 @@ class SubscriptionUpdated extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
-                    ->line('Your ' . $this->subscription->type . ' subscription has been updated.')
+                    ->line('Your ' . $this->subscription->type . ' subscription has just been activated.')
                     ->line('It expires in ' . $this->subscription->expires_at->diffForHumans(now()))
                     ->line('Thank you for using our application!');
     }

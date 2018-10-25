@@ -48,7 +48,7 @@ class SubscriptionExpired extends Notification
         return (new MailMessage)
                     ->line('Your ' . $this->subscription->type . ' subscription has expired.')
                     ->line('If you wish to resume your subscription, please click on the link below.')
-                    ->action('See Profile', url(config('frontend.url')))
+                    ->action('See Profile', config('frontend.url'))
                     ->line('Thank you for using our application, we hope to see you again in the (near) future!');
     }
 
