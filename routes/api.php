@@ -11,10 +11,6 @@
 |
 */
 
-Route::get('/', function (){
-    return App::version();
-});
-
 // AUTH
 Route::group([
     'prefix' => 'auth'
