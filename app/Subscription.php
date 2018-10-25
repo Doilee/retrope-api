@@ -18,6 +18,10 @@ class Subscription extends Model
         'trial', 'pro', 'enterprise'
     ];
 
+    protected $dates = [
+        'expires_at'
+    ];
+
     public function client()
     {
         $this->belongsTo(Client::class);

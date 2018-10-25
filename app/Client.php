@@ -24,17 +24,7 @@ class Client extends Model
 {
     protected $fillable =[
         'name',
-        'subscription_expires_at'
     ];
-
-    protected $dates = [
-        'subscription_expires_at'
-    ];
-
-    public function active() : bool
-    {
-        return $this->subscription_expires_at ? $this->subscription_expires_at->isPast() : false;
-    }
 
     public function users()
     {
