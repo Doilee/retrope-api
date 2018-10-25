@@ -30,9 +30,14 @@ class UserController extends Controller
 
         $fill = array_merge([
             'password' => bcrypt(uniqid())
-        ], $request->all());
+        ], $request->only(['name', 'email']));
 
+        /* @var User $user */
         $user = $this->client()->users()->create($fill);
+
+        if ($request->has('roles')) {
+            $user->assignRole($request->get('roles'));
+        }
 
         return response()->json([
             'message' => 'Successfully stored user',
@@ -86,9 +91,14 @@ class UserController extends Controller
 
         $this->validate($request, $this->validationRules());
 
-        $data = $request->only(array_keys($this->validationRules()));
+        $data = $request->only(['name', 'email']);
 
         $user->update($data);
+
+        if ($request->has('roles'))
+        {
+            $user->assignRole($request->get('roles'));
+        }
 
         return response()->json([
             'message' => 'Edit successful!',
@@ -126,6 +136,7 @@ class UserController extends Controller
         return [
             'name' => 'required|string|min:2|max:255',
             'email' => 'required|string|email|max:255|unique:users',
+            'roles.*' => 'nullable|string|in:manager,employee',
         ];
     }
 
