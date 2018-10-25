@@ -54,6 +54,8 @@ return [
 
     'url' => env('APP_URL', 'http://localhost'),
 
+    'frontend' => env('FRONT_END_URL', 'http://localhost:8080'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Timezone
@@ -148,6 +150,7 @@ return [
         Illuminate\View\ViewServiceProvider::class,
         Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
         Spatie\Permission\PermissionServiceProvider::class,
+        SanderVanHooft\Invoicable\InvoicableServiceProvider::class,
 
         /*
          * Package Service Providers...
