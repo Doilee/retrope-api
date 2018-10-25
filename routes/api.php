@@ -34,7 +34,9 @@ Route::group([
     Route::get('me', 'ProfileController@me');
     Route::post('profile/edit', 'ProfileController@edit');
 
-    Route::put('email/verify/{user}', 'Auth\VerificationController@verify')->middleware('signed')->name('verification.verify');
+    Route::get('email/verify/{id}', 'Auth\VerificationController@verify')->name('verification.verify');
+    Route::get('email/resend', 'Auth\VerificationController@resend')->name('verification.resend');
+
     Route::post('email/resend', 'Auth\VerificationController@resend');
 
     Route::group(['middleware' => 'role:admin'], function() {
