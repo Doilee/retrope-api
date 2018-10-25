@@ -4,8 +4,12 @@ namespace App\Http\Controllers\Admin;
 
 use App\Client;
 use App\Http\Controllers\Controller;
+use App\Notifications\SubscriptionStarted;
+use App\Notifications\SubscriptionUpdated;
 use App\Subscription;
+use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Notifications\Notification;
 
 class SubscriptionController extends Controller
 {
@@ -16,6 +20,8 @@ class SubscriptionController extends Controller
         $data = $request->only(array_keys($this->validationRules()));
 
         $subscription = $client->subscriptions()->create($data);
+
+        $this->notifyManagers($subscription->client, new SubscriptionStarted($subscription));
 
         return response()->json([
             'message' => 'Subscription succesfully stored!',
@@ -37,6 +43,8 @@ class SubscriptionController extends Controller
         $this->validate($request, $this->validationRules());
 
         $data = $request->only(array_keys($this->validationRules()));
+
+        $this->notifyManagers($subscription->client, new SubscriptionUpdated($subscription));
 
         $subscription->update($data);
 
@@ -74,5 +82,12 @@ class SubscriptionController extends Controller
             'type' => 'required|string|in:' . implode(',', Subscription::TYPES),
             'expires_at' => 'required|date|after:' . now()->toDateTimeString(),
         ];
+    }
+
+    private function notifyManagers(Client $client, Notification $notification)
+    {
+        $client->users()->role('managers')->each(function(User $user) use ($notification) {
+            $user->notify($notification);
+        });
     }
 }
