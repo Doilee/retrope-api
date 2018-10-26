@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Auth;
 use Illuminate\Http\Request;
 
 class ProfileController extends Controller
@@ -20,11 +21,9 @@ class ProfileController extends Controller
 
         $data = $request->only(['name', 'email']);
 
-        $user = auth()->user();
+        $user = Auth::user();
 
-        $user->fill($data);
-
-        $user->save();
+        $user->update($data);
 
         return response()->json([
             'message' => 'Edit successful!',

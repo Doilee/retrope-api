@@ -43,14 +43,10 @@ class AuthController extends Controller
         if ($this->attemptLogin($request)) {
             $this->clearLoginAttempts($request);
 
+            /* @var User $user */
             $user = $this->guard()->user();
-            $tokenResult = $user->createToken('Personal Access Token');
-            $token = $tokenResult->token;
 
-            if ($request->remember_me)
-                $token->expires_at = Carbon::now()->addWeeks(1);
-
-            $token->save();
+            $tokenResult = $this->createToken($request, $user);
 
             return response()->json([
                 'access_token' => $tokenResult->accessToken,
@@ -162,5 +158,16 @@ class AuthController extends Controller
     protected function guard()
     {
         return Auth::guard('web');
+    }
+
+    protected function createToken(Request $request, User $user)
+    {
+        $tokenResult = $user->createToken('Personal Access Token');
+        $token = $tokenResult->token;
+
+        if ($request->remember_me)
+            $token->expires_at = Carbon::now()->addWeeks(1);
+
+        $token->save();
     }
 }
