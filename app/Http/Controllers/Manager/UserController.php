@@ -2,6 +2,8 @@
 
 use App\Client;
 use App\Http\Controllers\Controller;
+use App\Notifications\AccountHasBeenMade;
+use App\PasswordReset;
 use App\User;
 use Auth;
 use Illuminate\Http\Request;
@@ -28,12 +30,23 @@ class UserController extends Controller
     {
         $this->validate($request, $this->validationRules());
 
+        $password = uniqid();
+
         $fill = array_merge([
-            'password' => bcrypt(uniqid())
+            'password' => bcrypt($password)
         ], $request->only(['name', 'email']));
 
         /* @var User $user */
         $user = $this->client()->users()->create($fill);
+
+        // Use password reset to authenticate from e-mail
+        $passwordReset = PasswordReset::create([
+                'email' => $user->email,
+                'token' => str_random(60)
+            ]
+        );
+
+        $user->notify(new AccountHasBeenMade($passwordReset->token));
 
         if ($request->has('roles')) {
             $user->assignRole($request->get('roles'));
