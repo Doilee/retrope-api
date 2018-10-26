@@ -169,5 +169,7 @@ class AuthController extends Controller
             $token->expires_at = Carbon::now()->addWeeks(1);
 
         $token->save();
+
+        return $tokenResult;
     }
 }

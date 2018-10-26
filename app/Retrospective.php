@@ -87,4 +87,9 @@ class Retrospective extends Model
 
         return $this->save();
     }
+
+    public function hasStarted()
+    {
+        return $this->starts_at ? $this->starts_at->isPast() : false;
+    }
 }

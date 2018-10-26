@@ -7,6 +7,7 @@ use App\User;
 use Auth;
 use Illuminate\Http\Request;
 use Mail;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 /**
  * Class RetrospectiveController
@@ -63,8 +64,8 @@ class RetrospectiveController extends Controller
      */
     public function join(Retrospective $retrospective)
     {
-        if ($retrospective->starts_at->isPast()) {
-            throw new RetrospectiveException("The retrospective session has already been started.");
+        if ($retrospective->hasStarted()) {
+            throw new BadRequestHttpException("The retrospective session has already been started.");
         }
 
         $user = Auth::user();
