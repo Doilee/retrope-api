@@ -60,11 +60,6 @@ class Player extends Model
         return $this->hasMany(Vote::class);
     }
 
-    public function invites()
-    {
-        return $this->hasMany(Invite::class);
-    }
-
     public function likes()
     {
         return $this->votes()->where('value', 1);

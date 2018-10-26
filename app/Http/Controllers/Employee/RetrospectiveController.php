@@ -53,36 +53,6 @@ class RetrospectiveController extends Controller
         ];
     }
 
-    /**
-     * This endpoint will not be used in production, is only used for testing!
-     *
-     * @param Retrospective $retrospective
-     *
-     * @return \Illuminate\Http\JsonResponse
-     * @internal param $invitationCode
-     *
-     */
-    public function join(Retrospective $retrospective)
-    {
-        $user = auth()->user();
-
-        if (!$retrospective->is_public) {
-            return response()->json([
-                'message' => 'Retro is private!',
-                'retrospective' => $retrospective
-            ]);
-        }
-
-        $player = $retrospective->players()->create([
-            'user_id' => $user->id
-        ]);
-
-        return response()->json([
-            'message' => 'User is now ready to play!',
-            'player' => $player
-        ]);
-    }
-
 
 
     /**
@@ -91,15 +61,8 @@ class RetrospectiveController extends Controller
      * @return \Illuminate\Http\JsonResponse
      * @throws \Exception
      */
-    public function acceptInvite(Retrospective $retrospective)
+    public function join(Retrospective $retrospective)
     {
-        // Old code
-        // /* @var Invite $invite */
-        // if (!$invite = Invite::where('token', $token)->first()) {
-        //     //if the invite doesn't exist do something more graceful than this
-        //     abort(404);
-        // }
-
         if ($retrospective->starts_at->isPast()) {
             throw new RetrospectiveException("The retrospective session has already been started.");
         }
@@ -112,7 +75,7 @@ class RetrospectiveController extends Controller
             throw new RetrospectiveException("You have not been invited to join this retrospective.");
         }
 
-        $player->joined_at = now();
+        $player->joined_at = now()->toDateTimeString();
 
         $player->save();
 

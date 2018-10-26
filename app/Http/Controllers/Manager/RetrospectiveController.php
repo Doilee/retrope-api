@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\Controller;
 use App\Invite;
-use App\Mail\PlayerInvited;
+use App\Notifications\PlayerInvited;
 use App\Retrospective;
 use App\User;
 use Illuminate\Http\Request;
@@ -40,10 +40,10 @@ class RetrospectiveController extends Controller
             'starts_at' => 'nullable|date|after:' . now()->toDateTimeString(),
         ]);
 
-        /** @var User $host */
-        $host = auth()->user();
+        /** @var User $manager */
+        $manager = auth()->user();
 
-        $retrospective = $host->retrospective()->create([
+        $retrospective = $manager->retrospective()->create([
             'name' => $request->get('name'),
             'scheduled_at' => $request->get('scheduled_at'),
         ]);
@@ -93,7 +93,6 @@ class RetrospectiveController extends Controller
         $users = $manager->client->users;
 
         // Throw exception when user isn't part of the client
-
         if (!$users->where('id', $user->id)->first()) {
             throw new BadRequestHttpException('User doesn\'t exist');
         }
@@ -103,16 +102,10 @@ class RetrospectiveController extends Controller
             'user_id' => $user->id,
         ]);
 
-        /* @var Invite $invite */
-        $invite = $player->invites()->create([
-            'token' => str_random(),
-        ]);
-
-        Mail::to($user)->send(new PlayerInvited($invite));
-        // mail to email
+        $user->notify(new PlayerInvited());
 
         return response()->json([
-            'message' => 'User invited!'
+            'message' => 'User invited, he/she has been notified!'
         ]);
     }
 }

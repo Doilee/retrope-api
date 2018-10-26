@@ -69,10 +69,7 @@ Route::group([
 
         Route::get('retrospective/{retrospective}/timer', 'Employee\RetrospectiveController@timeLeft');
 
-        // Test join todo: Comment when going live
         Route::put('retrospective/{retrospective}/join', 'Employee\RetrospectiveController@join');
-        // Real join todo: Uncomment when going live
-        // Route::put('retrospective/{retrospective}/join', 'InvitationController@acceptInvite');
 
         // actions
         Route::post('retrospective/{retrospective}/action/create', 'Employee\ActionController@create');
