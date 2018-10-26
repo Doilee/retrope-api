@@ -25,30 +25,49 @@ class CrudTest extends TestCase
      *
      * @return void
      */
-    public function testStore()
+    public function testCrud()
     {
-        foreach ($this->storables() as $model => $storable)
+        foreach ($this->scope() as $model => $case)
         {
             $urlName = strtolower(array_last(explode('\\', $model)));
 
-            $request = Request::create('/' . $urlName, 'POST', $storable['request']);
-
-            $this->assertCount(0, app($model)->all());
-
-            app($storable['controller'])->store($request);
-
-            $this->assertCount(1, app($model)->all());
+            foreach($case['resources'] as $resource) {
+                $this->{$resource . 'Test'}($urlName, $model, $case);
+            }
         }
     }
 
-    private function storables()
+    private function storeTest($urlName, $model, $case)
+    {
+        $request = Request::create('/' . $urlName, 'POST', $case['request']);
+
+        $this->assertCount(0, app($model)->all());
+
+        app($case['controller'])->store($request);
+
+        $this->assertCount(1, app($model)->all());
+    }
+
+    private function destroyTest($urlName, $model, $case)
+    {
+        $model = app($model)->first() ?? factory($model)->create();
+
+        $this->assertCount(1, $model->all());
+
+        app($case['controller'])->destroy($model);
+
+        $this->assertCount(0, $model->all());
+    }
+
+    private function scope()
     {
         return [
             Client::class => [
                 'controller' => ClientController::class,
                 'request' => [
                     'type' => array_random(Subscription::TYPES)
-                ]
+                ],
+                'resources' => ['store', 'destroy']
             ]
         ];
     }
