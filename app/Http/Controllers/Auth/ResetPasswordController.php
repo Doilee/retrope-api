@@ -114,6 +114,11 @@ class ResetPasswordController extends Controller
 
         $user->password = bcrypt($request->password);
 
+        // Automatically verify e-mail
+        if (!$user->email_verified_at) {
+            $user->email_verified_at = now()->toDateTimeString();
+        }
+
         $user->save();
 
         $passwordReset->delete();
