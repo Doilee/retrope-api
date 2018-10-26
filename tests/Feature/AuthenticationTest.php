@@ -29,16 +29,6 @@ class AuthenticationTest extends TestCase
     }
 
     /**
-     * Test the simple base URL
-     */
-    public function testVersion()
-    {
-        $response = $this->get('/');
-
-        $response->assertSuccessful();
-    }
-
-    /**
      * Test the login.
      *
      * @return void
@@ -52,20 +42,39 @@ class AuthenticationTest extends TestCase
 
         $response->assertStatus(401);
 
-        $response = $this->post('/auth/register', [
-            'name' => 'LaravelPassport',
-            'email' => 'passported@retrope.com',
-            'password' => 'bunnyboy123',
-            'password_confirmation' => 'bunnyboy123',
+        $user = factory(User::class)->create([
+            'name' => 'test',
+            'email' => 'test@retrope.com',
+            'password' => bcrypt('bunnyboy123'),
         ]);
 
-        $response->assertSuccessful();
-
         $response = $this->post('/auth/login', [
-            'email' => 'passported@retrope.com',
+            'email' => 'test@retrope.com',
             'password' => 'bunnyboy123'
         ]);
 
         $response->assertSuccessful();
+    }
+
+    public function testThrottler()
+    {
+        for ($i = 1;$i <= 5;$i++)
+        {
+            $response = $this->post('/auth/login', [
+                'email' => 'spam@retrope.com',
+                'password' => 'spammyboy'
+            ]);
+
+            if ($response->status() === 429) {
+                dd('Login throttler fails at ' . $i . ' login attempts');
+            }
+
+            $response->assertStatus(401);
+        }
+
+        $response = $this->post('/auth/login', [
+            'email' => 'spam@retrope.com',
+            'password' => 'spammyboy'
+        ])->assertStatus(429);
     }
 }
