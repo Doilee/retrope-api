@@ -71,7 +71,7 @@ class RetrospectiveController extends Controller
 
         $player = $user->players()->where('retrospective_id', $retrospective->id)->first();
 
-        if (!$player->invites()->first()) {
+        if (!$player) {
             throw new RetrospectiveException("You have not been invited to join this retrospective.");
         }
 
