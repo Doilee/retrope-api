@@ -1,5 +1,6 @@
 <?php
 namespace App\Http\Controllers;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Auth\ThrottlesLogins;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -132,14 +133,22 @@ class AuthController extends Controller
         ]);
     }
 
-    /**
-     * @param Request $request
-     * @param $user
+        /**
+     * Handle a registration request for the application.
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
      */
-    protected function registered(Request $request, $user)
+    public function register(Request $request)
     {
+        $this->validator($request->all())->validate();
+
+        event(new Registered($user = $this->create($request->all())));
+
+        $this->guard()->login($user);
+
+        $user->assignRole('employee');
+
         return response()->json([
             'message' => 'Successfully created user!'
         ], 201);
