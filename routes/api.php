@@ -15,8 +15,8 @@
 Route::group([
     'prefix' => 'auth'
 ], function () {
-    Route::post('login', 'AuthController@login');
-    Route::post('register', 'AuthController@register');
+    Route::post('login', 'Auth\LoginController@login');
+    Route::post('register', 'Auth\RegisterController@register');
 
     Route::post('password/create', 'Auth\ResetPasswordController@create');
     Route::get('password/find/{token}', 'Auth\ResetPasswordController@find');
@@ -29,7 +29,7 @@ Route::group([
 Route::group([
   'middleware' => 'auth:api'
 ], function() {
-    Route::get('auth/logout', 'AuthController@logout');
+    Route::get('auth/logout', 'Auth\LoginController@logout');
 
     Route::get('me', 'ProfileController@me');
     Route::post('profile/edit', 'ProfileController@edit');
