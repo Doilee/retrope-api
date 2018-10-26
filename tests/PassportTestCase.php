@@ -8,7 +8,6 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 class PassportTestCase extends TestCase
 {
-    use DatabaseTransactions;
     protected $headers = [];
     protected $scopes = [];
 
