@@ -9,7 +9,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use URL;
 
-class AccountHasBeenMade extends Notification
+class AccountMade extends Notification
 {
     use Queueable;
 

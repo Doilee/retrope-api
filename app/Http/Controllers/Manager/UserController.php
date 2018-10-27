@@ -2,7 +2,7 @@
 
 use App\Client;
 use App\Http\Controllers\Controller;
-use App\Notifications\AccountHasBeenMade;
+use App\Notifications\AccountMade;
 use App\PasswordReset;
 use App\User;
 use Auth;
@@ -46,7 +46,7 @@ class UserController extends Controller
             ]
         );
 
-        $user->notify(new AccountHasBeenMade($passwordReset->token));
+        $user->notify(new AccountMade($passwordReset->token));
 
         if ($request->has('roles')) {
             $user->assignRole($request->get('roles'));
