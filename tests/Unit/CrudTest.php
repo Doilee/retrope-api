@@ -28,6 +28,10 @@ class CrudTest extends TestCase
      */
     public function testCrud()
     {
+        $admin = factory(User::class)->create();
+        $admin->assignRole('admin');
+        $this->be($admin);
+
         foreach ($this->scope() as $class => $case)
         {
             foreach($case['methods'] as $resource) {
@@ -91,6 +95,14 @@ class CrudTest extends TestCase
                     'name' => 'RETROPICAL'
                 ],
                 'methods' => ['store', 'update', 'destroy']
+            ],
+            Subscription::class => [
+                'controller' => SubscriptionController::class,
+                'update_request' => [
+                    'type' => 'pro',
+                    'expires_at' => now()->addYears(2)->toDateTimeString(),
+                ],
+                'methods' => ['update', 'destroy']
             ]
         ];
     }
