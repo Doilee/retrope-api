@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "b6df430eadc1adfbc10d065884ff8f00",
-    "content-hash": "d92d1bb640fbf1a4946dc6915284fa69",
+    "hash": "f60f502ea4086039c1c7f301fafa2c20",
+    "content-hash": "7f746f99b0fb10eeac2848b3ca26c614",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -123,16 +123,16 @@
         },
         {
             "name": "bepsvpt/secure-headers",
-            "version": "5.3.1",
+            "version": "5.3.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/BePsvPT/secure-headers.git",
-                "reference": "487f3291df89fb703720d5e287ec1331540342d3"
+                "reference": "5a4764208d095587b043708856708469f44bd201"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/BePsvPT/secure-headers/zipball/487f3291df89fb703720d5e287ec1331540342d3",
-                "reference": "487f3291df89fb703720d5e287ec1331540342d3",
+                "url": "https://api.github.com/repos/BePsvPT/secure-headers/zipball/5a4764208d095587b043708856708469f44bd201",
+                "reference": "5a4764208d095587b043708856708469f44bd201",
                 "shasum": ""
             },
             "require": {
@@ -180,7 +180,7 @@
                 "https",
                 "laravel"
             ],
-            "time": "2018-09-06 14:13:03"
+            "time": "2018-10-26 12:58:35"
         },
         {
             "name": "defuse/php-encryption",
