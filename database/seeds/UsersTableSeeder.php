@@ -3,7 +3,6 @@
 use App\Client;
 use App\User;
 use Illuminate\Database\Seeder;
-use Spatie\Permission\Models\Role;
 
 class UsersTableSeeder extends Seeder
 {
@@ -14,11 +13,6 @@ class UsersTableSeeder extends Seeder
      */
     public function run()
     {
-        Role::create(['name' => 'admin']);
-        Role::create(['name' => 'manager']);
-        Role::create(['name' => 'employee']);
-        Role::create(['name' => 'guest']);
-
         // Matthijs
         $admin = factory(User::class)->create([
             'name' => 'Administrator',
