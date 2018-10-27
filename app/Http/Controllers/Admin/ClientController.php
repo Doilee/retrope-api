@@ -92,7 +92,7 @@ class ClientController extends Controller
     private function validationRules()
     {
         return [
-            'type' => 'required|string|in:' . implode(',', Subscription::TYPES),
+            'name' => 'required|string|min:2|max:255',
         ];
     }
 }
