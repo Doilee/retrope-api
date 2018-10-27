@@ -9,6 +9,7 @@ use App\Http\Controllers\Manager\UserController;
 use App\Subscription;
 use App\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 use Tests\TestCase;
@@ -27,47 +28,69 @@ class CrudTest extends TestCase
      */
     public function testCrud()
     {
-        foreach ($this->scope() as $model => $case)
+        foreach ($this->scope() as $class => $case)
         {
-            $urlName = strtolower(array_last(explode('\\', $model)));
-
-            foreach($case['resources'] as $resource) {
-                $this->{$resource . 'Test'}($urlName, $model, $case);
+            foreach($case['methods'] as $resource) {
+                $this->{$resource . 'Test'}($class, $case);
             }
         }
     }
 
-    private function storeTest($urlName, $model, $case)
+    protected function storeTest($class, $case)
     {
-        $request = Request::create('/' . $urlName, 'POST', $case['request']);
+        $urlName = strtolower(array_last(explode('\\', $class)));
 
-        $this->assertCount(0, app($model)->all());
+        $request = Request::create('/' . $urlName, 'POST', $case['store_request']);
 
-        app($case['controller'])->store($request);
+        $this->assertCount(0, $this->app->make($class)->all());
 
-        $this->assertCount(1, app($model)->all());
+        $this->app->make($case['controller'])->store($request);
+
+        $this->assertCount(1, $this->app->make($class)->all());
     }
 
-    private function destroyTest($urlName, $model, $case)
+    protected function updateTest($class, $case)
     {
-        $model = app($model)->first() ?? factory($model)->create();
+        $urlName = strtolower(array_last(explode('\\', $class)));
 
-        $this->assertCount(1, $model->all());
+        $model = $this->app->make($class)->first() ?? factory($class)->create();
 
-        app($case['controller'])->destroy($model);
+        $request = Request::create('/' . $urlName . '/' . $model->id, 'PUT', $case['update_request']);
 
-        $this->assertCount(0, $model->all());
+        $this->assertCount(1, $this->app->make($class)->all());
+
+        $this->app->make($case['controller'])->update($request, $model);
+
+        $this->assertCount(1, $this->app->make($class)->all());
+
+        foreach($case['update_request'] as $key => $value) {
+            $this->assertEquals($model->$key, $value);
+        }
     }
 
-    private function scope()
+    protected function destroyTest($class, $case)
+    {
+        $model = $this->app->make($class)->first() ?? factory($class)->create();
+
+        $this->assertCount(1, $this->app->make($class)->all());
+
+        $this->app->make($case['controller'])->destroy($model);
+
+        $this->assertCount(0, $this->app->make($class)->all());
+    }
+
+    protected function scope()
     {
         return [
             Client::class => [
                 'controller' => ClientController::class,
-                'request' => [
-                    'type' => array_random(Subscription::TYPES)
+                'store_request' => [
+                    'name' => 'RETROPE'
                 ],
-                'resources' => ['store', 'destroy']
+                'update_request' => [
+                    'name' => 'RETROPICAL'
+                ],
+                'methods' => ['store', 'update', 'destroy']
             ]
         ];
     }
