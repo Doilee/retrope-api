@@ -107,8 +107,6 @@ class ActionController extends Controller
 
         $vote = $this->player->vote($action);
 
-        $vote->save();
-
         return response()->json([
             'message' => 'One vote has been given.',
             'vote' => $vote,

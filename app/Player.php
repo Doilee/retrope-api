@@ -76,6 +76,8 @@ class Player extends Model
             'action_id' => $action->id,
         ]);
 
+        $vote->save();
+
         return $vote;
     }
 }
