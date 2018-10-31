@@ -96,7 +96,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         return $this->hasMany(Player::class);
     }
 
-    public function retrospective()
+    public function retrospectives()
     {
         return $this->hasMany(Retrospective::class, 'host_id');
     }

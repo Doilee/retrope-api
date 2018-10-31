@@ -43,7 +43,7 @@ class RetrospectiveController extends Controller
         /** @var User $manager */
         $manager = auth()->user();
 
-        $retrospective = $manager->retrospective()->create([
+        $retrospective = $manager->retrospectives()->create([
             'name' => $request->get('name'),
             'scheduled_at' => $request->get('scheduled_at'),
         ]);
