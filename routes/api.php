@@ -62,7 +62,7 @@ Route::group([
         Route::get('retrospective/{retrospective}', 'Manager\RetrospectiveController@show');
         Route::put('retrospective/{retrospective}/start', 'Manager\RetrospectiveController@start');
 
-        Route::post('retrospective/{retrospective}/invite/{user}', 'Manager\InvitationController@invite');
+        Route::post('retrospective/{retrospective}/invite/{user}', 'Manager\RetrospectiveController@invite');
     });
 
     Route::group(['middleware' => 'role:employee'], function() {
