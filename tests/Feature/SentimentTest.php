@@ -9,7 +9,7 @@ class SentimentTest extends TestCase
 {
     protected function setUp()
     {
-        $this->markTestIncomplete();
+        $this->markTestSkipped();
     }
 
     public function testPositive()
