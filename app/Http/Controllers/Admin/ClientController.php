@@ -4,9 +4,12 @@ namespace App\Http\Controllers\Admin;
 
 use App\Client;
 use App\Http\Controllers\Controller;
-use App\Subscription;
 use Illuminate\Http\Request;
 
+/**
+ * Class ClientController
+ * @package App\Http\Controllers\Admin
+ */
 class ClientController extends Controller
 {
     /**
@@ -75,7 +78,7 @@ class ClientController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the client from the database.
      *
      * @param  \App\Client  $client
      * @return \Illuminate\Http\Response
@@ -89,6 +92,9 @@ class ClientController extends Controller
         ]);
     }
 
+    /**
+     * @return array
+     */
     private function validationRules()
     {
         return [

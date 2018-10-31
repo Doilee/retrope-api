@@ -22,6 +22,7 @@ use SanderVanHooft\Invoicable\IsInvoicable\IsInvoicableTrait;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Subscription whereType($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Subscription whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property-read \App\Client $client
  */
 class Subscription extends Model
 {

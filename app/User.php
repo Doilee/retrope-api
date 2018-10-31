@@ -53,6 +53,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User permission($permissions)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User role($roles)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereClientId($value)
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Retrospective[] $retrospectives
  */
 class User extends Model implements AuthenticatableContract, AuthorizableContract, MustVerifyEmailContract, CanResetPasswordContract
 {
