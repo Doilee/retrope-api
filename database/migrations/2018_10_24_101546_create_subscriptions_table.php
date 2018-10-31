@@ -20,6 +20,9 @@ class CreateSubscriptionsTable extends Migration
             $table->enum('type', Subscription::TYPES);
             $table->dateTime('expires_at');
             $table->timestamps();
+
+            $table->foreign('client_id')->references('id')->on('clients')
+                ->onDelete('cascade');
         });
     }
 

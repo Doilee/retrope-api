@@ -20,8 +20,10 @@ class CreateVotesTable extends Migration
             $table->tinyInteger('value')->default(1);
             $table->timestamp('created_at');
 
-            $table->foreign('player_id')->references('id')->on('players');
-            $table->foreign('action_id')->references('id')->on('actions');
+            $table->foreign('player_id')->references('id')->on('players')
+                ->onDelete('cascade');
+            $table->foreign('action_id')->references('id')->on('actions')
+                ->onDelete('cascade');
         });
     }
 
