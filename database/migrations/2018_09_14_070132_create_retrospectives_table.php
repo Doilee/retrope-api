@@ -16,7 +16,6 @@ class CreateRetrospectivesTable extends Migration
             $table->increments('id');
             $table->integer('host_id')->unsigned();
             $table->string('name');
-            $table->boolean('is_public')->default(true);
             $table->dateTime('scheduled_at')->nullable();
             $table->dateTime('starts_at')->nullable();
             $table->dateTime('voting_starts_at')->nullable();
