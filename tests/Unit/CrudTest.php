@@ -46,11 +46,14 @@ class CrudTest extends TestCase
 
         $request = Request::create('/' . $urlName, 'POST', $case['store_request']);
 
-        $this->assertCount(0, $this->app->make($class)->all());
+        $this->assertCount(0,
+            $this->app->make($class)->all(),
+            $class . ' was found, example:'. $this->app->make($class)->first()
+        );
 
         $this->app->make($case['controller'])->store($request);
 
-        $this->assertCount(1, $this->app->make($class)->all());
+        $this->assertCount(1, $this->app->make($class)->all(), $class);
     }
 
     protected function updateTest($class, $case)
@@ -61,11 +64,11 @@ class CrudTest extends TestCase
 
         $request = Request::create('/' . $urlName . '/' . $model->id, 'PUT', $case['update_request']);
 
-        $this->assertCount(1, $this->app->make($class)->all());
+        $this->assertCount(1, $this->app->make($class)->all(), $class);
 
         $this->app->make($case['controller'])->update($request, $model);
 
-        $this->assertCount(1, $this->app->make($class)->all());
+        $this->assertCount(1, $this->app->make($class)->all(), $class);
 
         foreach($case['update_request'] as $key => $value) {
             $this->assertEquals($model->$key, $value);
@@ -76,11 +79,11 @@ class CrudTest extends TestCase
     {
         $model = $this->app->make($class)->first() ?? factory($class)->create();
 
-        $this->assertCount(1, $this->app->make($class)->all());
+        $this->assertCount(1, $this->app->make($class)->all(), $class);
 
         $this->app->make($case['controller'])->destroy($model);
 
-        $this->assertCount(0, $this->app->make($class)->all());
+        $this->assertCount(0, $this->app->make($class)->all(), $class);
     }
 
     protected function scope()
