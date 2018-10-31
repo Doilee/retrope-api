@@ -2,13 +2,11 @@
 
 namespace App\Console\Commands;
 
+use App\Notifications\PlayerInvited;
 use App\Retrospective;
 use Illuminate\Console\Command;
 
-use App\Invite;
-use App\Mail\PlayerInvited;
 use App\Player;
-use Mail;
 
 class SendScheduledInvitations extends Command
 {
@@ -43,14 +41,13 @@ class SendScheduledInvitations extends Command
      */
     public function handle()
     {
-        $retrospectives = Retrospective::where('starts_at', '<', now()->addMinutes(10)->toDateTimeString())
-            ->where('completed_at', '!=', null)
+        $retrospectives = Retrospective::where('scheduled_at', '<', now()->addMinutes(10)->toDateTimeString())
+            ->where('starts_at', '=', null)
             ->get();
 
         $retrospectives->each(function(Retrospective $retrospective) {
             $retrospective->players()->each(function(Player $player) {
-                Mail::to($player->user)
-                    ->send(new PlayerInvited($player->invites()->first()));
+                $player->user->notify(new PlayerInvited);
             });
         });
     }

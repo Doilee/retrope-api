@@ -3,7 +3,10 @@
 namespace Tests\Unit;
 
 use App\Client;
+use App\Console\Commands\SendScheduledInvitations;
+use App\Notifications\PlayerInvited;
 use App\Notifications\SubscriptionStarted;
+use App\Player;
 use App\Subscription;
 use App\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
@@ -15,20 +18,15 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class NotificationTest extends TestCase
 {
-    /**
-     * A basic test example.
-     *
-     * @return void
-     */
-    public function testExample()
+    public function setUp()
     {
-        $this->assertTrue(true);
+        parent::setUp();
+
+        Notification::fake();
     }
 
     public function testSubscriptionStarted()
     {
-        Notification::fake();
-
         $client = factory(Client::class)->create();
 
         $subscription = factory(Subscription::class)->create([
@@ -42,5 +40,39 @@ class NotificationTest extends TestCase
         $user->notify($notification);
 
         Notification::assertSentTo($user, SubscriptionStarted::class);
+    }
+
+        /**
+     * A basic test example.
+     *
+     * @return void
+     */
+    public function testSendingScheduledInvitations()
+    {
+        /* @var Player $player */
+        $player = factory(Player::class)->create();
+
+        $retrospective = $player->retrospective;
+
+        $retrospective->scheduled_at = now()->addHour()->toDateTimeString();
+
+        $retrospective->save();
+
+        $command = new SendScheduledInvitations;
+
+        $command->handle();
+
+        Notification::assertNothingSent();
+
+        $retrospective->scheduled_at = now()->subHour()->toDateTimeString();
+
+        $retrospective->save();
+
+        $command->handle();
+
+        $notification = PlayerInvited::class;
+
+        Notification::assertSentTo($player->user, $notification);
+        Notification::assertTimesSent(1, $notification);
     }
 }
