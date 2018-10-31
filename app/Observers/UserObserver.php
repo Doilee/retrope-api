@@ -3,8 +3,8 @@
 namespace App\Observers;
 
 use App\Player;
+use App\Retrospective;
 use App\User;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class UserObserver
 {
@@ -15,6 +15,10 @@ class UserObserver
 
     public function deleting(User $user)
     {
+        $user->retrospectives->each(function(Retrospective $retrospective) {
+            $retrospective->delete();
+        });
+
         $user->players->each(function(Player $player) {
             $player->delete();
         });
