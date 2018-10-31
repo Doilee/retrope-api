@@ -51,7 +51,9 @@ phpunit
 ```
 
 ### If you have problems running the tests
-Clear the caches 
+Make sure to run these every time after you run `php artisan optimize`!
+
+Clears the caches
 ```$xslt
 php artisan config:clear
 php artisan cache:clear
