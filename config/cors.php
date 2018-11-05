@@ -20,7 +20,7 @@ return [
         'allow_credentials' => false,
 
         'allow_origins' => [
-            env('FRONT_END_URL')
+            '*',
         ],
 
         'allow_methods' => [
@@ -35,6 +35,7 @@ return [
         'allow_headers' => [
             'Content-Type',
             // 'X-Auth-Token',
+            // 'X-Requested-With',
             'Origin',
             'Authorization',
         ],
