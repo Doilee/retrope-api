@@ -11,9 +11,7 @@
 |
 */
 
-Route::get('/', function() {
-    return App::version();
-});
+Route::get('/', 'Auth\LoginController@welcome');
 
 // AUTH
 Route::group([

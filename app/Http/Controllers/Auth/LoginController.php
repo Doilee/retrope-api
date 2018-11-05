@@ -21,6 +21,14 @@ class LoginController extends Controller
 {
     use AuthenticatesUsers;
 
+    public function welcome()
+    {
+        return response()->json([
+            'version' => \App::version(),
+            'direction' => 'Please refer to the api docs to continue'
+        ]);
+    }
+
     /**
      * Validate the user login request.
      *
