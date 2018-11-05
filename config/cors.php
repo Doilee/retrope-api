@@ -20,8 +20,7 @@ return [
         'allow_credentials' => false,
 
         'allow_origins' => [
-            'https://retrope.com',
-            'https://admin.retrope.com',
+            env('FRONT_END_URL')
         ],
 
         'allow_methods' => [
