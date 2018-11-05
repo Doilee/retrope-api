@@ -19,6 +19,7 @@ class Kernel extends HttpKernel
         \App\Http\Middleware\TrimStrings::class,
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
         \App\Http\Middleware\TrustProxies::class,
+        \Spatie\Cors\Cors::class,
     ];
 
     /**
@@ -29,9 +30,8 @@ class Kernel extends HttpKernel
     protected $middlewareGroups = [
         'api' => [
             'throttle:60,1',
-            'bindings',
-            \Barryvdh\Cors\HandleCors::class,
-        ],
+            'bindings'
+        ]
     ];
 
     /**
@@ -53,6 +53,6 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'role' => \Spatie\Permission\Middlewares\RoleMiddleware::class,
         'permission' => \Spatie\Permission\Middlewares\PermissionMiddleware::class,
-        'role_or_permission' => \Spatie\Permission\Middlewares\RoleOrPermissionMiddleware::class,
+        'role_or_permission' => \Spatie\Permission\Middlewares\RoleOrPermissionMiddleware::class
     ];
 }
