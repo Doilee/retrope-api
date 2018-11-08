@@ -4,6 +4,7 @@ namespace App\Observers;
 
 use App\Client;
 use App\Subscription;
+use App\User;
 
 class ClientObserver
 {
@@ -13,8 +14,8 @@ class ClientObserver
             $subscription->delete();
         });
 
-        $client->users->each(function(Subscription $subscription) {
-            $subscription->delete();
+        $client->users->each(function(User $user) {
+            $user->delete();
         });
     }
 }

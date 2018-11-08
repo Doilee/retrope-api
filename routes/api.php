@@ -58,6 +58,13 @@ Route::group([
             'index', 'store', 'show', 'update', 'destroy'
         ]]);
 
+        Route::resource('team', 'Manager\TeamController', ['only' => [
+            'index', 'store', 'show', 'update', 'destroy'
+        ]]);
+
+        Route::put('team/{team}/user/{user}', 'Manager\TeamController@attachUser');
+        Route::delete('team/{team}/user/{user}', 'Manager\TeamController@detachUser');
+
         Route::post('user/{user}/sendverification', 'Manager\UserController@sendVerificationToUser');
 
         Route::post('retrospective/create', 'Manager\RetrospectiveController@create');

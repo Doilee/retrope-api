@@ -5,8 +5,10 @@ namespace Tests\Unit;
 use App\Client;
 use App\Http\Controllers\Admin\ClientController;
 use App\Http\Controllers\Admin\SubscriptionController;
+use App\Http\Controllers\Manager\TeamController;
 use App\Http\Controllers\Manager\UserController;
 use App\Subscription;
+use App\Team;
 use App\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -16,11 +18,6 @@ use Tests\TestCase;
 
 class CrudTest extends TestCase
 {
-    public function setUp()
-    {
-        parent::setUp();
-    }
-
     /**
      * A basic test example.
      *
@@ -28,14 +25,16 @@ class CrudTest extends TestCase
      */
     public function testCrud()
     {
-        $admin = factory(User::class)->create();
-        $admin->assignRole('admin');
-        $this->be($admin);
-
-        foreach ($this->scope() as $class => $case)
+        foreach ($this->scope() as $role => $case)
         {
-            foreach($case['methods'] as $resource) {
-                $this->{$resource . 'Test'}($class, $case);
+            $user = factory(User::class)->create();
+            $user->assignRole($role);
+            $this->be($user);
+            foreach ($case as $class => $data)
+            {
+                foreach($data['methods'] as $resource) {
+                    $this->{$resource . 'Test'}($class, $data);
+                }
             }
         }
     }
@@ -46,66 +45,81 @@ class CrudTest extends TestCase
 
         $request = Request::create('/' . $urlName, 'POST', $case['store_request']);
 
-        $this->assertCount(0,
-            $this->app->make($class)->all(),
-            $class . ' was found, example:'. $this->app->make($class)->first()
-        );
+        $count = $this->app->make($class)->all()->count();
 
         $this->app->make($case['controller'])->store($request);
 
-        $this->assertCount(1, $this->app->make($class)->all(), $class);
+        $this->assertGreaterThan($count, $this->app->make($class)->all()->count(), $class);
     }
 
     protected function updateTest($class, $case)
     {
         $urlName = strtolower(array_last(explode('\\', $class)));
 
-        $model = $this->app->make($class)->first() ?? factory($class)->create();
+        $model = factory($class)->create();
 
         $request = Request::create('/' . $urlName . '/' . $model->id, 'PUT', $case['update_request']);
 
-        $this->assertCount(1, $this->app->make($class)->all(), $class);
-
         $this->app->make($case['controller'])->update($request, $model);
-
-        $this->assertCount(1, $this->app->make($class)->all(), $class);
 
         foreach($case['update_request'] as $key => $value) {
             $this->assertEquals($model->$key, $value);
         }
+
+        $this->assertEquals($model->all()->count(), $this->app->make($class)->all()->count(), $class);
     }
 
     protected function destroyTest($class, $case)
     {
         $model = $this->app->make($class)->first() ?? factory($class)->create();
 
-        $this->assertCount(1, $this->app->make($class)->all(), $class);
+        $count = $model->all()->count();
+
+        $this->assertGreaterThanOrEqual(1, $count);
 
         $this->app->make($case['controller'])->destroy($model);
 
-        $this->assertCount(0, $this->app->make($class)->all(), $class);
+        $this->assertLessThan($count, $this->app->make($class)->all()->count(), $class);
     }
 
     protected function scope()
     {
         return [
-            Client::class => [
-                'controller' => ClientController::class,
-                'store_request' => [
-                    'name' => 'RETROPE'
+            'admin' => [
+                Client::class => [
+                    'controller' => ClientController::class,
+                    'store_request' => [
+                        'name' => 'RETROPE'
+                    ],
+                    'update_request' => [
+                        'name' => 'RETROPICAL'
+                    ],
+                    'methods' => ['store', 'update', 'destroy']
                 ],
-                'update_request' => [
-                    'name' => 'RETROPICAL'
+                Subscription::class => [
+                    'controller' => SubscriptionController::class,
+                    'update_request' => [
+                        'type' => 'pro',
+                        'expires_at' => now()->addYears(2)->toDateTimeString(),
+                    ],
+                    'methods' => ['update', 'destroy']
                 ],
-                'methods' => ['store', 'update', 'destroy']
+                Team::class => [
+                    'controller' => TeamController::class,
+                    'update_request' => [
+                        'name' => 'Meh Team'
+                    ],
+                    'methods' => ['update', 'destroy']
+                ]
             ],
-            Subscription::class => [
-                'controller' => SubscriptionController::class,
-                'update_request' => [
-                    'type' => 'pro',
-                    'expires_at' => now()->addYears(2)->toDateTimeString(),
-                ],
-                'methods' => ['update', 'destroy']
+            'manager' => [
+                Team::class => [
+                    'controller' => TeamController::class,
+                    'store_request' => [
+                        'name' => 'Super Team'
+                    ],
+                    'methods' => ['store']
+                ]
             ]
         ];
     }

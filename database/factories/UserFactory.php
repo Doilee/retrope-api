@@ -16,6 +16,9 @@ use Faker\Generator as Faker;
 $factory->define(App\User::class, function (Faker $faker) {
     return [
         'name' => $faker->name,
+        'client_id' => function() {
+            return factory(\App\Client::class)->create()->id;
+         },
         'email' => $faker->unique()->safeEmail,
         'password' => password_hash('secret', PASSWORD_DEFAULT),
         'email_verified_at' => now()->subDay(),
