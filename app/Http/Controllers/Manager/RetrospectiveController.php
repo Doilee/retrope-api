@@ -14,7 +14,7 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
  * Class RetrospectiveController
  * @package App\Http\Controllers
  */
-class RetrospectiveController extends Controller
+class RetrospectiveController extends ManagerController
 {
     /**
      * @param Retrospective $retrospective
@@ -81,10 +81,12 @@ class RetrospectiveController extends Controller
     }
 
     /**
-     * @param Request $request
      * @param Retrospective $retrospective
      *
+     * @param User $user
+     *
      * @return \Illuminate\Http\JsonResponse
+     * @internal param Request $request
      */
     public function invite(Retrospective $retrospective, User $user)
     {

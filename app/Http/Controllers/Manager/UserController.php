@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Input;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
-class UserController extends Controller
+class UserController extends ManagerController
 {
     /**
      * Display a listing of the resource.
@@ -151,24 +151,5 @@ class UserController extends Controller
             'email' => 'required|string|email|max:255|unique:users',
             'roles.*' => 'nullable|string|in:manager,employee',
         ];
-    }
-
-    private function client()
-    {
-        $user = Auth::user();
-
-        if ($user->hasRole('manager')) {
-            return Auth::user()->client;
-        }
-
-        if ($user->hasRole('admin')) {
-            if (!Input::get('client_id')) {
-                throw new BadRequestHttpException('Please provide a client_id in your request.');
-            }
-
-            return Client::find(Input::get('client_id'));
-        }
-
-        throw new \Exception("Permission issue, please contact matthijs@retrope.com");
     }
 }
