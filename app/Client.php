@@ -36,4 +36,9 @@ class Client extends Model
     {
         return $this->hasMany(Subscription::class);
     }
+
+    public function teams()
+    {
+        return $this->hasMany(Team::class);
+    }
 }
