@@ -33,8 +33,8 @@ Route::group([
 ], function() {
     Route::get('auth/logout', 'Auth\LoginController@logout');
 
-    Route::get('me', 'ProfileController@me');
-    Route::post('profile/edit', 'ProfileController@edit');
+    Route::get('profile', 'ProfileController@me');
+    Route::post('profile', 'ProfileController@edit');
 
     Route::get('email/verify/{id}', 'Auth\VerificationController@verify')->name('verification.verify');
     Route::get('email/resend', 'Auth\VerificationController@resend')->name('verification.resend');
