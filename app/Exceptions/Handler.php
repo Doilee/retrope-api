@@ -102,6 +102,7 @@ class Handler extends ExceptionHandler
                 'guards' => $exception->guards(),
             ], 402);
         }
+
         if ($exception instanceof Exception)
         {
 

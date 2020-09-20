@@ -4,7 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Client;
 use App\Http\Controllers\Controller;
+use App\Subscription;
 use Illuminate\Http\Request;
+use Mockery\Exception;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 /**
  * Class ClientController
@@ -30,7 +33,7 @@ class ClientController extends Controller
     {
         $this->validate($request, $this->validationRules());
 
-        $data = $request->only(array_keys($this->validationRules()));
+        $data = $request->only((new Client)->getFillable());
 
         $client = new Client($data);
 
@@ -67,7 +70,7 @@ class ClientController extends Controller
     {
         $this->validate($request, $this->validationRules());
 
-        $data = $request->only(array_keys($this->validationRules()));
+        $data = $request->only($client->getFillable());
 
         $client->update($data);
 

@@ -7,6 +7,7 @@ use App\Retrospective;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\UnauthorizedException;
 use Mail;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
@@ -23,7 +24,14 @@ class RetrospectiveController extends ManagerController
      */
     public function show(Retrospective $retrospective)
     {
+        $manager = Auth::user();
+
+        if ($retrospective->host_id !== $manager->id) {
+            throw new UnauthorizedException('You are not authorized to do this.');
+        }
+
         $retrospective->load('actions');
+
         return $retrospective;
     }
 
